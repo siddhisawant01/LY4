@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Body Parts Sorting Game</title>
+<title>Body Parts Game</title>
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
 
 <style>
@@ -28,75 +27,74 @@ body {
 
 /* SLIDE 1 */
 #slide1 {
-  background: white;
   justify-content: center;
   align-items: center;
+  background: white;
 }
 
 #slide1 img {
-  width: 150px;
+  width: 120px;
 }
 
 /* SLIDE 2 */
 #slide2 {
   flex-direction: column;
   background: linear-gradient(to bottom, #f7d9e3, #fdf1f5);
-  border: 6px solid #ffb6c1;
+  border: 5px solid #ffb6c1;
   box-sizing: border-box;
+  padding: 5px;
 }
 
 /* INSTRUCTION */
 .instruction {
   text-align: center;
-  font-size: 20px;
   font-family: 'Comic Neue', cursive;
-  margin-top: 5px;
-  color: #444;
+  font-size: 16px;
+  margin: 5px 0;
 }
 
-/* TOP SECTION */
+/* TOP AREA */
 .top {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 50%;
-  gap: 10px;
+  gap: 5px;
+  flex: 1;
 }
 
-/* SQUARE BOXES */
+/* DROP ZONES */
 .column {
-  width: 45%;
-  height: 90%;
-  border: 3px dashed #555;
-  border-radius: 15px;
-  text-align: center;
+  flex: 1;
+  border: 2px dashed #555;
+  border-radius: 10px;
   padding: 5px;
-
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .column h3 {
-  grid-column: span 3;
-  margin: 5px 0;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  margin: 2px 0;
 }
 
 /* BOTTOM ITEMS */
 .bottom {
-  height: 50%;
+  flex: 1;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 /* ITEMS */
 .item {
-  width: 75px;
-  height: 75px;
-  margin: 6px;
-  border-radius: 12px;
+  width: 60px;
+  height: 60px;
+  margin: 4px;
+  border-radius: 10px;
   background: white;
   border: 2px solid #ff8fa3;
   display: flex;
@@ -110,32 +108,38 @@ body {
   object-fit: contain;
 }
 
+/* SMALL SCREEN ADJUSTMENT */
+@media (max-width: 400px) {
+  .item {
+    width: 50px;
+    height: 50px;
+  }
+}
+
 /* SLIDE 3 */
 #slide3 {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background: white;
   position: relative;
+  background: white;
 }
 
 #message {
-  font-size: 28px;
+  font-size: 24px;
 }
 
 /* CONFETTI */
 .confetti {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   top: -10px;
   animation: fall 3s linear infinite;
 }
 
 @keyframes fall {
-  to {
-    transform: translateY(110vh);
-  }
+  to { transform: translateY(110vh); }
 }
 </style>
 </head>
@@ -180,13 +184,13 @@ body {
 
 <script>
 
-/* SLIDE TRANSITION */
+/* SLIDE CHANGE */
 setTimeout(() => {
   slide1.classList.remove("active");
   slide2.classList.add("active");
 }, 2000);
 
-/* ITEMS IN YOUR EXACT ORDER */
+/* FIXED ORDER */
 const items = [
   {name: "eyes", type: "external"},
   {name: "brain", type: "internal"},
@@ -220,22 +224,18 @@ items.forEach(item => {
   div.addEventListener("touchstart", () => touchItem = div);
 });
 
-/* DRAG + TOUCH */
 let draggedItem = null;
 let touchItem = null;
 
-/* DROP ZONES */
+/* DROP LOGIC */
 ["internal", "external"].forEach(id => {
   const zone = document.getElementById(id);
 
   zone.addEventListener("dragover", e => e.preventDefault());
-
   zone.addEventListener("drop", () => handleDrop(zone, draggedItem));
-
   zone.addEventListener("touchend", () => handleDrop(zone, touchItem));
 });
 
-/* HANDLE DROP */
 function handleDrop(zone, item) {
   if (!item) return;
 
@@ -253,25 +253,25 @@ function handleDrop(zone, item) {
   touchItem = null;
 }
 
-/* FINISH GAME */
+/* FINISH */
 function finishGame() {
   setTimeout(() => {
     slide2.classList.remove("active");
     slide3.classList.add("active");
     clapSound.play();
     createConfetti();
-  }, 500);
+  }, 400);
 }
 
 /* CONFETTI */
 function createConfetti() {
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 40; i++) {
     let c = document.createElement("div");
     c.className = "confetti";
     c.style.left = Math.random() * 100 + "vw";
     c.style.background = `hsl(${Math.random()*360},100%,50%)`;
     c.style.animationDuration = (2 + Math.random()*2) + "s";
-    document.getElementById("slide3").appendChild(c);
+    slide3.appendChild(c);
   }
 }
 
