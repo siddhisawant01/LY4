@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marine Game</title>
+<title>Marine Match Game</title>
 
 <style>
 body {
   margin:0;
-  font-family: 'Comic Sans MS';
+  font-family:'Comic Sans MS';
   overflow:hidden;
+  background: linear-gradient(#a8dadc, #457b9d);
 }
 
 /* SLIDES */
@@ -32,29 +33,31 @@ body {
   width:220px;
 }
 
-/* SLIDE 2 BACKGROUND */
+/* SLIDE 2 */
 #slide2 {
   flex-direction:column;
-  background: url("assets/background3.jpg") no-repeat center/cover;
-  border:10px solid #ffafcc;
-  box-sizing:border-box;
 }
 
 /* INSTRUCTION */
 .instruction {
-  background:#fff3cd;
+  background:#ffe5ec;
   padding:10px 20px;
-  border-radius:20px;
-  font-size:20px;
+  border-radius:25px;
   font-weight:bold;
-  margin-top:10px;
+  font-size:20px;
+  margin:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* GAME */
-.game {
+/* MAIN GAME CARD */
+.game-card {
+  width:95%;
+  height:85%;
+  background:rgba(255,255,255,0.9);
+  border-radius:25px;
   display:flex;
-  width:100%;
-  height:90%;
+  box-shadow:0 10px 20px rgba(0,0,0,0.2);
+  padding:10px;
 }
 
 /* COLUMNS */
@@ -66,27 +69,38 @@ body {
   align-items:center;
 }
 
-/* CARDS */
+/* ANIMAL CARDS */
 .card {
-  width:70px;
+  width:75px;
   background:white;
-  border-radius:15px;
+  border-radius:20px;
   border:3px solid #ffafcc;
-  text-align:center;
   padding:5px;
+  text-align:center;
+  box-shadow:0 5px 10px rgba(0,0,0,0.2);
+  transition:0.2s;
 }
-.card img { width:100%; }
-.card p { margin:2px; font-size:12px; }
+.card:active {
+  transform:scale(0.95);
+}
+.card img {
+  width:100%;
+}
+.card p {
+  font-size:12px;
+  margin:2px;
+}
 
-/* CENTER IMAGE */
+/* CENTER ZONE */
 .center {
   position:relative;
 }
 .center img {
-  width:250px;
+  width:260px;
+  border-radius:20px;
 }
 
-/* ZONE POSITIONS */
+/* CLICK ZONES */
 .zone {
   position:absolute;
   width:100%;
@@ -97,11 +111,11 @@ body {
 .twilight { top:33%; }
 .midnight { top:66%; }
 
-/* MOVE ANIMATION */
+/* MOVE */
 .move {
   position:absolute;
-  transition: all 0.8s ease;
-  z-index:5;
+  transition:all 0.8s ease;
+  z-index:10;
 }
 
 /* WRONG */
@@ -135,8 +149,9 @@ body {
 
 /* MOBILE */
 @media(max-width:600px){
+  .card { width:60px; }
   .center img { width:180px; }
-  .card { width:55px; }
+  .instruction { font-size:16px; }
 }
 </style>
 </head>
@@ -145,7 +160,7 @@ body {
 
 <!-- SLIDE 1 -->
 <div id="slide1" class="slide active">
-  <img src="assets/innovine_logo.png">
+  <img src="assets/innovine_logo.png" onerror="this.style.display='none'">
 </div>
 
 <!-- SLIDE 2 -->
@@ -155,7 +170,7 @@ body {
 🐠 Match the marine animals to the correct Ocean Zone 🌊
 </div>
 
-<div class="game">
+<div class="game-card">
 
 <!-- LEFT -->
 <div class="column">
@@ -168,20 +183,18 @@ body {
 
 <!-- CENTER -->
 <div class="column center">
+  <img src="assets/ocean_zones.png">
 
-<img src="assets/ocean zones.png">
-
-<div class="zone sunlight" onclick="check('sunlight')"></div>
-<div class="zone twilight" onclick="check('twilight')"></div>
-<div class="zone midnight" onclick="check('midnight')"></div>
-
+  <div class="zone sunlight" onclick="check('sunlight')"></div>
+  <div class="zone twilight" onclick="check('twilight')"></div>
+  <div class="zone midnight" onclick="check('midnight')"></div>
 </div>
 
 <!-- RIGHT -->
 <div class="column">
   <div class="card" onclick="select(this,'sunlight')"><img src="assets/clownfish.png"><p>Clownfish</p></div>
   <div class="card" onclick="select(this,'twilight')"><img src="assets/jellyfish.png"><p>Jellyfish</p></div>
-  <div class="card" onclick="select(this,'sunlight')"><img src="assets/sea turtle.png"><p>Sea Turtle</p></div>
+  <div class="card" onclick="select(this,'sunlight')"><img src="assets/sea_turtle.png"><p>Sea Turtle</p></div>
   <div class="card" onclick="select(this,'twilight')"><img src="assets/shrimp.png"><p>Shrimp</p></div>
   <div class="card" onclick="select(this,'midnight')"><img src="assets/eel.png"><p>Eel</p></div>
 </div>
@@ -216,11 +229,10 @@ function check(zone){
   if(zone===correctZone){
 
     let rect=document.querySelector("." + zone).getBoundingClientRect();
-    selected.classList.add("move");
 
-    selected.style.position="absolute";
-    selected.style.left=rect.left + 20 + "px";
-    selected.style.top=rect.top + 20 + "px";
+    selected.classList.add("move");
+    selected.style.left=rect.left + 30 + "px";
+    selected.style.top=rect.top + 30 + "px";
 
     document.getElementById("correct").play();
     selected.onclick=null;
@@ -242,7 +254,7 @@ function check(zone){
   }
 }
 
-/* AUTO SLIDE */
+/* AUTO START */
 setTimeout(()=>{
   slide1.classList.remove("active");
   slide2.classList.add("active");
