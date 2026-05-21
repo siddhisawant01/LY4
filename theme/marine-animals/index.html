@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Marine Game</title>
+<title>Ocean Game</title>
 
 <style>
 body {
@@ -10,22 +10,18 @@ body {
     font-family: 'Comic Sans MS', cursive;
 }
 
-/* -------- SLIDES -------- */
-.slide {
-    display: none;
-    height: 100vh;
-}
-.active {
-    display: block;
-}
+/* -------- SLIDE CONTROL -------- */
+#slide1 { display: block; }
+#slide2 { display: none; }
 
 /* -------- SLIDE 1 -------- */
 #slide1 {
+    height: 100vh;
     background: linear-gradient(to bottom, #74c0fc, #a5d8ff);
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 }
 
 .logo {
@@ -38,13 +34,14 @@ button {
     font-size: 20px;
     border-radius: 20px;
     border: none;
-    background: #ff8787;
+    background: #ff6b6b;
     color: white;
     cursor: pointer;
 }
 
 /* -------- SLIDE 2 -------- */
 #slide2 {
+    height: 100vh;
     background: url("assets/bg1.png") no-repeat center;
     background-size: cover;
     display: flex;
@@ -58,7 +55,7 @@ button {
     padding: 10px;
     border-radius: 20px;
     margin: 10px auto;
-    width: fit-content;
+    font-size: 18px;
 }
 
 /* layout */
@@ -66,23 +63,24 @@ button {
     display: flex;
     justify-content: space-between;
     padding: 20px;
-    height: 100%;
+    flex: 1;
 }
 
-/* animals */
+/* columns */
 .column {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
+/* animal cards */
 .card {
     width: 100px;
-    padding: 10px;
-    text-align: center;
     background: white;
+    padding: 8px;
     border-radius: 15px;
     border: 2px solid pink;
+    text-align: center;
     cursor: grab;
 }
 
@@ -90,7 +88,7 @@ button {
     width: 80px;
 }
 
-/* center zone image */
+/* CENTER ZONE */
 .zone-container {
     display: flex;
     justify-content: center;
@@ -98,12 +96,18 @@ button {
 }
 
 .zone-image {
-    width: 300px;   /* BIG SIZE FIXED */
-    height: 500px;
+    width: 320px;
+    height: 520px;
     position: relative;
 }
 
-/* drop zones */
+.zone-image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+}
+
+/* DROP ZONES */
 .zone {
     position: absolute;
     width: 100%;
@@ -122,22 +126,26 @@ button {
     border: 3px solid red !important;
 }
 </style>
+
 </head>
 
 <body>
 
 <!-- -------- SLIDE 1 -------- -->
-<div id="slide1" class="slide active">
-    <!-- FIXED LOGO -->
-    <img src="assets/innovine.png" class="logo" onerror="this.style.display='none'">
-    
-    <button onclick="startGame()">Start Game</button>
+<div id="slide1">
+    <!-- LOGO FIX -->
+    <img src="assets/innovine.png" class="logo"
+         onerror="this.style.display='none'">
+
+    <button id="startBtn">Start Game</button>
 </div>
 
 <!-- -------- SLIDE 2 -------- -->
-<div id="slide2" class="slide">
+<div id="slide2">
 
-    <div class="title">🌊 match the marine animals to the correct ocean zone 🌊</div>
+    <div class="title">
+        🌊 match the marine animals to the correct ocean zone 🌊
+    </div>
 
     <div class="game">
 
@@ -160,16 +168,18 @@ button {
             </div>
         </div>
 
-        <!-- CENTER (IMPORTANT FIX) -->
+        <!-- CENTER -->
         <div class="zone-container">
             <div class="zone-image">
-                <!-- OCEAN IMAGE BACK -->
-                <img src="assets/ocean.png" style="width:100%; height:100%; border-radius:20px;">
 
-                <!-- DROP ZONES -->
+                <!-- BIG OCEAN IMAGE -->
+                <img src="assets/ocean.png">
+
+                <!-- DROP AREAS -->
                 <div class="zone sunlight"></div>
                 <div class="zone twilight"></div>
                 <div class="zone midnight"></div>
+
             </div>
         </div>
 
@@ -196,12 +206,14 @@ button {
 </div>
 
 <script>
-function startGame() {
-    document.getElementById("slide1").classList.remove("active");
-    document.getElementById("slide2").classList.add("active");
-}
 
-/* DRAG LOGIC (FIXED) */
+/* -------- START BUTTON FIX -------- */
+document.getElementById("startBtn").onclick = function () {
+    document.getElementById("slide1").style.display = "none";
+    document.getElementById("slide2").style.display = "flex";
+};
+
+/* -------- DRAG DROP FIX -------- */
 let dragged;
 
 document.querySelectorAll(".card").forEach(card => {
@@ -214,18 +226,22 @@ document.querySelectorAll(".zone").forEach(zone => {
 
     zone.addEventListener("dragover", e => e.preventDefault());
 
-    zone.addEventListener("drop", function() {
-        const correctZone = dragged.getAttribute("data-zone");
+    zone.addEventListener("drop", function () {
 
-        if (this.classList.contains(correctZone)) {
+        const correct = dragged.getAttribute("data-zone");
+
+        if (this.classList.contains(correct)) {
             this.appendChild(dragged);
             dragged.classList.add("correct");
         } else {
             dragged.classList.add("wrong");
-            setTimeout(() => dragged.classList.remove("wrong"), 1000);
+            setTimeout(() => dragged.classList.remove("wrong"), 800);
         }
+
     });
+
 });
+
 </script>
 
 </body>
