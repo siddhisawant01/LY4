@@ -31,7 +31,7 @@ body {
 }
 
 #slide1 img {
-  width: 150px;
+  width: 140px;
 }
 
 /* SLIDE 2 */
@@ -40,44 +40,65 @@ body {
   background: linear-gradient(to bottom, #f7d9e3, #fdf1f5);
 }
 
+/* INSTRUCTION */
+.instruction {
+  text-align: center;
+  font-size: 16px;
+  padding: 5px;
+  font-weight: bold;
+}
+
 /* TOP SECTION */
 .top {
   display: flex;
-  height: 50%;
+  height: 45%;
 }
 
 .column {
   flex: 1;
   border: 2px dashed #555;
-  margin: 10px;
-  border-radius: 10px;
+  margin: 8px;
+  border-radius: 12px;
   text-align: center;
   padding: 5px;
-  font-size: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
 }
 
 .column h3 {
-  margin: 5px;
+  grid-column: span 3;
+  margin: 5px 0;
 }
 
 /* BOTTOM ITEMS */
 .bottom {
-  height: 50%;
+  height: 55%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   border-top: 2px solid #ccc;
+  padding: 5px;
 }
 
+/* ITEMS */
 .item {
   width: 60px;
+  height: 60px;
   margin: 5px;
+  border-radius: 10px;
+  background: white;
+  border: 2px solid #ffb6c1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .item img {
-  width: 100%;
-  touch-action: none;
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
 }
 
 /* SLIDE 3 */
@@ -86,6 +107,7 @@ body {
   align-items: center;
   flex-direction: column;
   background: white;
+  position: relative;
 }
 
 #message {
@@ -96,15 +118,16 @@ body {
 /* CONFETTI */
 .confetti {
   position: absolute;
-  width: 10px;
-  height: 10px;
-  background: red;
-  animation: fall 2s linear infinite;
+  width: 8px;
+  height: 8px;
+  top: -10px;
+  animation: fall 3s linear infinite;
 }
 
 @keyframes fall {
-  from {transform: translateY(-100px);}
-  to {transform: translateY(100vh);}
+  to {
+    transform: translateY(110vh);
+  }
 }
 </style>
 </head>
@@ -123,6 +146,10 @@ body {
 
 <!-- SLIDE 2 -->
 <div id="slide2" class="slide">
+
+  <div class="instruction">
+    Sort the internal organs and external body parts
+  </div>
 
   <div class="top">
     <div class="column" id="internal">
@@ -146,11 +173,11 @@ body {
 
 /* SLIDE TRANSITION */
 setTimeout(() => {
-  document.getElementById("slide1").classList.remove("active");
-  document.getElementById("slide2").classList.add("active");
+  slide1.classList.remove("active");
+  slide2.classList.add("active");
 }, 2000);
 
-/* DATA */
+/* DATA (NO HAIR) */
 const items = [
   {name: "heart", type: "internal"},
   {name: "brain", type: "internal"},
@@ -160,16 +187,23 @@ const items = [
   {name: "eyes", type: "external"},
   {name: "nose", type: "external"},
   {name: "ear", type: "external"},
-  {name: "hair", type: "external"},
   {name: "hand", type: "external"},
   {name: "leg", type: "external"}
 ];
 
-let correctCount = 0;
+/* SHUFFLE FUNCTION */
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+shuffle(items);
 
-/* CREATE ITEMS */
+let correctCount = 0;
 const container = document.getElementById("items");
 
+/* CREATE ITEMS */
 items.forEach(item => {
   const div = document.createElement("div");
   div.className = "item";
@@ -182,15 +216,13 @@ items.forEach(item => {
   div.appendChild(img);
   container.appendChild(div);
 
-  div.addEventListener("dragstart", dragStart);
+  div.addEventListener("dragstart", () => draggedItem = div);
+  div.addEventListener("touchstart", () => touchItem = div);
 });
 
-/* DRAG FUNCTIONS */
+/* DRAG + TOUCH */
 let draggedItem = null;
-
-function dragStart(e) {
-  draggedItem = this;
-}
+let touchItem = null;
 
 /* DROP ZONES */
 ["internal", "external"].forEach(id => {
@@ -198,70 +230,48 @@ function dragStart(e) {
 
   zone.addEventListener("dragover", e => e.preventDefault());
 
-  zone.addEventListener("drop", () => {
-    if (draggedItem.dataset.type === id) {
-      zone.appendChild(draggedItem);
-      document.getElementById("correctSound").play();
-      correctCount++;
+  zone.addEventListener("drop", () => handleDrop(zone, draggedItem));
 
-      if (correctCount === items.length) {
-        finishGame();
-      }
-    } else {
-      document.getElementById("wrongSound").play();
-    }
-  });
+  zone.addEventListener("touchend", () => handleDrop(zone, touchItem));
 });
 
-/* TOUCH SUPPORT */
-document.querySelectorAll(".item").forEach(item => {
-  item.addEventListener("touchstart", touchStart);
-});
+/* HANDLE DROP */
+function handleDrop(zone, item) {
+  if (!item) return;
 
-let touchItem = null;
+  if (item.dataset.type === zone.id) {
+    zone.appendChild(item);
+    correctSound.play();
+    correctCount++;
 
-function touchStart(e) {
-  touchItem = this;
+    if (correctCount === items.length) finishGame();
+  } else {
+    wrongSound.play();
+  }
+
+  draggedItem = null;
+  touchItem = null;
 }
 
-document.querySelectorAll(".column").forEach(col => {
-  col.addEventListener("touchend", () => {
-    if (!touchItem) return;
-
-    if (touchItem.dataset.type === col.id) {
-      col.appendChild(touchItem);
-      document.getElementById("correctSound").play();
-      correctCount++;
-
-      if (correctCount === items.length) {
-        finishGame();
-      }
-    } else {
-      document.getElementById("wrongSound").play();
-    }
-
-    touchItem = null;
-  });
-});
-
-/* FINISH */
+/* FINISH GAME */
 function finishGame() {
   setTimeout(() => {
-    document.getElementById("slide2").classList.remove("active");
-    document.getElementById("slide3").classList.add("active");
-    document.getElementById("clapSound").play();
+    slide2.classList.remove("active");
+    slide3.classList.add("active");
+    clapSound.play();
     createConfetti();
   }, 500);
 }
 
 /* CONFETTI */
 function createConfetti() {
-  for (let i = 0; i < 30; i++) {
-    let div = document.createElement("div");
-    div.className = "confetti";
-    div.style.left = Math.random() * 100 + "vw";
-    div.style.background = `hsl(${Math.random()*360},100%,50%)`;
-    document.body.appendChild(div);
+  for (let i = 0; i < 40; i++) {
+    let c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = `hsl(${Math.random()*360},100%,50%)`;
+    c.style.animationDuration = (2 + Math.random()*2) + "s";
+    document.getElementById("slide3").appendChild(c);
   }
 }
 
