@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Body Parts Sorting Game</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* SLIDES */
+.slide {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+}
+
+.active {
+  display: flex;
+}
+
+/* SLIDE 1 */
+#slide1 {
+  background: white;
+  justify-content: center;
+  align-items: center;
+}
+
+#slide1 img {
+  width: 150px;
+}
+
+/* SLIDE 2 */
+#slide2 {
+  flex-direction: column;
+  background: linear-gradient(to bottom, #f7d9e3, #fdf1f5);
+}
+
+/* TOP SECTION */
+.top {
+  display: flex;
+  height: 50%;
+}
+
+.column {
+  flex: 1;
+  border: 2px dashed #555;
+  margin: 10px;
+  border-radius: 10px;
+  text-align: center;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.column h3 {
+  margin: 5px;
+}
+
+/* BOTTOM ITEMS */
+.bottom {
+  height: 50%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  border-top: 2px solid #ccc;
+}
+
+.item {
+  width: 60px;
+  margin: 5px;
+}
+
+.item img {
+  width: 100%;
+  touch-action: none;
+}
+
+/* SLIDE 3 */
+#slide3 {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: white;
+}
+
+#message {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+/* CONFETTI */
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: red;
+  animation: fall 2s linear infinite;
+}
+
+@keyframes fall {
+  from {transform: translateY(-100px);}
+  to {transform: translateY(100vh);}
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUDIO -->
+<audio id="correctSound" src="assets/correct.mp3"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3"></audio>
+
+<!-- SLIDE 1 -->
+<div id="slide1" class="slide active">
+  <img src="assets/innovine-logo.png">
+</div>
+
+<!-- SLIDE 2 -->
+<div id="slide2" class="slide">
+
+  <div class="top">
+    <div class="column" id="internal">
+      <h3>Internal Organs</h3>
+    </div>
+    <div class="column" id="external">
+      <h3>External Body Parts</h3>
+    </div>
+  </div>
+
+  <div class="bottom" id="items"></div>
+
+</div>
+
+<!-- SLIDE 3 -->
+<div id="slide3" class="slide">
+  <div id="message">🎉 Good Job 🎉</div>
+</div>
+
+<script>
+
+/* SLIDE TRANSITION */
+setTimeout(() => {
+  document.getElementById("slide1").classList.remove("active");
+  document.getElementById("slide2").classList.add("active");
+}, 2000);
+
+/* DATA */
+const items = [
+  {name: "heart", type: "internal"},
+  {name: "brain", type: "internal"},
+  {name: "lungs", type: "internal"},
+  {name: "kidney", type: "internal"},
+  {name: "stomach", type: "internal"},
+  {name: "eyes", type: "external"},
+  {name: "nose", type: "external"},
+  {name: "ear", type: "external"},
+  {name: "hair", type: "external"},
+  {name: "hand", type: "external"},
+  {name: "leg", type: "external"}
+];
+
+let correctCount = 0;
+
+/* CREATE ITEMS */
+const container = document.getElementById("items");
+
+items.forEach(item => {
+  const div = document.createElement("div");
+  div.className = "item";
+  div.draggable = true;
+  div.dataset.type = item.type;
+
+  const img = document.createElement("img");
+  img.src = `assets/${item.name}.png`;
+
+  div.appendChild(img);
+  container.appendChild(div);
+
+  div.addEventListener("dragstart", dragStart);
+});
+
+/* DRAG FUNCTIONS */
+let draggedItem = null;
+
+function dragStart(e) {
+  draggedItem = this;
+}
+
+/* DROP ZONES */
+["internal", "external"].forEach(id => {
+  const zone = document.getElementById(id);
+
+  zone.addEventListener("dragover", e => e.preventDefault());
+
+  zone.addEventListener("drop", () => {
+    if (draggedItem.dataset.type === id) {
+      zone.appendChild(draggedItem);
+      document.getElementById("correctSound").play();
+      correctCount++;
+
+      if (correctCount === items.length) {
+        finishGame();
+      }
+    } else {
+      document.getElementById("wrongSound").play();
+    }
+  });
+});
+
+/* TOUCH SUPPORT */
+document.querySelectorAll(".item").forEach(item => {
+  item.addEventListener("touchstart", touchStart);
+});
+
+let touchItem = null;
+
+function touchStart(e) {
+  touchItem = this;
+}
+
+document.querySelectorAll(".column").forEach(col => {
+  col.addEventListener("touchend", () => {
+    if (!touchItem) return;
+
+    if (touchItem.dataset.type === col.id) {
+      col.appendChild(touchItem);
+      document.getElementById("correctSound").play();
+      correctCount++;
+
+      if (correctCount === items.length) {
+        finishGame();
+      }
+    } else {
+      document.getElementById("wrongSound").play();
+    }
+
+    touchItem = null;
+  });
+});
+
+/* FINISH */
+function finishGame() {
+  setTimeout(() => {
+    document.getElementById("slide2").classList.remove("active");
+    document.getElementById("slide3").classList.add("active");
+    document.getElementById("clapSound").play();
+    createConfetti();
+  }, 500);
+}
+
+/* CONFETTI */
+function createConfetti() {
+  for (let i = 0; i < 30; i++) {
+    let div = document.createElement("div");
+    div.className = "confetti";
+    div.style.left = Math.random() * 100 + "vw";
+    div.style.background = `hsl(${Math.random()*360},100%,50%)`;
+    document.body.appendChild(div);
+  }
+}
+
+</script>
+
+</body>
+</html>
