@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Body Parts Sorting Game</title>
 
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+
 <style>
 body {
   margin: 0;
@@ -31,39 +34,47 @@ body {
 }
 
 #slide1 img {
-  width: 140px;
+  width: 150px;
 }
 
 /* SLIDE 2 */
 #slide2 {
   flex-direction: column;
   background: linear-gradient(to bottom, #f7d9e3, #fdf1f5);
+  border: 6px solid #ffb6c1;
+  box-sizing: border-box;
 }
 
 /* INSTRUCTION */
 .instruction {
   text-align: center;
-  font-size: 16px;
-  padding: 5px;
-  font-weight: bold;
+  font-size: 20px;
+  font-family: 'Comic Neue', cursive;
+  margin-top: 5px;
+  color: #444;
 }
 
 /* TOP SECTION */
 .top {
   display: flex;
-  height: 45%;
+  justify-content: center;
+  align-items: center;
+  height: 50%;
+  gap: 10px;
 }
 
+/* SQUARE BOXES */
 .column {
-  flex: 1;
-  border: 2px dashed #555;
-  margin: 8px;
-  border-radius: 12px;
+  width: 45%;
+  height: 90%;
+  border: 3px dashed #555;
+  border-radius: 15px;
   text-align: center;
   padding: 5px;
+
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
+  gap: 8px;
 }
 
 .column h3 {
@@ -73,31 +84,29 @@ body {
 
 /* BOTTOM ITEMS */
 .bottom {
-  height: 55%;
+  height: 50%;
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  border-top: 2px solid #ccc;
-  padding: 5px;
+  flex-wrap: wrap;
 }
 
 /* ITEMS */
 .item {
-  width: 60px;
-  height: 60px;
-  margin: 5px;
-  border-radius: 10px;
+  width: 75px;
+  height: 75px;
+  margin: 6px;
+  border-radius: 12px;
   background: white;
-  border: 2px solid #ffb6c1;
+  border: 2px solid #ff8fa3;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .item img {
-  width: 80%;
-  height: 80%;
+  width: 85%;
+  height: 85%;
   object-fit: contain;
 }
 
@@ -112,7 +121,6 @@ body {
 
 #message {
   font-size: 28px;
-  margin-bottom: 20px;
 }
 
 /* CONFETTI */
@@ -155,6 +163,7 @@ body {
     <div class="column" id="internal">
       <h3>Internal Organs</h3>
     </div>
+
     <div class="column" id="external">
       <h3>External Body Parts</h3>
     </div>
@@ -177,28 +186,19 @@ setTimeout(() => {
   slide2.classList.add("active");
 }, 2000);
 
-/* DATA (NO HAIR) */
+/* ITEMS IN YOUR EXACT ORDER */
 const items = [
-  {name: "heart", type: "internal"},
-  {name: "brain", type: "internal"},
-  {name: "lungs", type: "internal"},
-  {name: "kidney", type: "internal"},
-  {name: "stomach", type: "internal"},
   {name: "eyes", type: "external"},
+  {name: "brain", type: "internal"},
+  {name: "liver", type: "internal"},
   {name: "nose", type: "external"},
-  {name: "ear", type: "external"},
+  {name: "heart", type: "internal"},
+  {name: "kidney", type: "internal"},
   {name: "hand", type: "external"},
-  {name: "leg", type: "external"}
+  {name: "lungs", type: "internal"},
+  {name: "leg", type: "external"},
+  {name: "stomach", type: "internal"}
 ];
-
-/* SHUFFLE FUNCTION */
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-shuffle(items);
 
 let correctCount = 0;
 const container = document.getElementById("items");
@@ -265,7 +265,7 @@ function finishGame() {
 
 /* CONFETTI */
 function createConfetti() {
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 50; i++) {
     let c = document.createElement("div");
     c.className = "confetti";
     c.style.left = Math.random() * 100 + "vw";
