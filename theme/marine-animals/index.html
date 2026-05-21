@@ -2,200 +2,229 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ocean Zone Game</title>
+<title>Marine Game</title>
 
 <style>
 body {
-  margin: 0;
-  font-family: 'Comic Sans MS', cursive;
+    margin: 0;
+    font-family: 'Comic Sans MS', cursive;
 }
 
-/* ----------- SLIDES ----------- */
+/* -------- SLIDES -------- */
 .slide {
-  display: none;
-  height: 100vh;
-  width: 100%;
+    display: none;
+    height: 100vh;
 }
-
 .active {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+    display: block;
 }
 
-/* ----------- SLIDE 1 ----------- */
+/* -------- SLIDE 1 -------- */
 #slide1 {
-  background: linear-gradient(to bottom, #8fd3f4, #84fab0);
+    background: linear-gradient(to bottom, #74c0fc, #a5d8ff);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .logo {
-  width: 200px;
-  margin-bottom: 20px;
+    width: 180px;
+    margin-bottom: 20px;
 }
 
-.start-btn {
-  padding: 15px 30px;
-  font-size: 22px;
-  border: none;
-  border-radius: 20px;
-  background: #ff9a9e;
-  cursor: pointer;
+button {
+    padding: 15px 30px;
+    font-size: 20px;
+    border-radius: 20px;
+    border: none;
+    background: #ff8787;
+    color: white;
+    cursor: pointer;
 }
 
-/* ----------- SLIDE 2 ----------- */
+/* -------- SLIDE 2 -------- */
 #slide2 {
-  background: url('assets/bg-ocean.png') no-repeat center/cover;
+    background: url("assets/bg1.png") no-repeat center;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Title */
+/* title */
 .title {
-  margin-top: 10px;
-  background: #ffd6e0;
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 18px;
+    text-align: center;
+    background: #ffd6e0;
+    padding: 10px;
+    border-radius: 20px;
+    margin: 10px auto;
+    width: fit-content;
 }
 
-/* Layout */
-.game-container {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  width: 100%;
-  height: 100%;
-  align-items: center;
+/* layout */
+.game {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    height: 100%;
 }
 
-/* Animal cards */
-.animal {
-  width: 90px;
-  padding: 8px;
-  margin: 10px auto;
-  background: white;
-  border: 2px solid pink;
-  border-radius: 15px;
-  text-align: center;
-  cursor: grab;
+/* animals */
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.animal img {
-  width: 70px;
+.card {
+    width: 100px;
+    padding: 10px;
+    text-align: center;
+    background: white;
+    border-radius: 15px;
+    border: 2px solid pink;
+    cursor: grab;
 }
 
-/* Ocean Zone */
+.card img {
+    width: 80px;
+}
+
+/* center zone image */
 .zone-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+.zone-image {
+    width: 300px;   /* BIG SIZE FIXED */
+    height: 500px;
+    position: relative;
+}
+
+/* drop zones */
 .zone {
-  width: 300px;
-  height: 500px;
-  background: url('assets/ocean-zones.png') no-repeat center/contain;
-  position: relative;
-  border-radius: 20px;
-}
-
-/* Drop areas */
-.drop {
-  position: absolute;
-  width: 100%;
-  height: 33%;
+    position: absolute;
+    width: 100%;
+    height: 33%;
 }
 
 .sunlight { top: 0; }
 .twilight { top: 33%; }
 .midnight { top: 66%; }
 
-/* Drop feedback */
+/* feedback */
 .correct {
-  border: 3px solid green;
+    border: 3px solid green !important;
 }
-
 .wrong {
-  border: 3px solid red;
+    border: 3px solid red !important;
 }
-
 </style>
 </head>
 
 <body>
 
-<!-- ----------- SLIDE 1 ----------- -->
+<!-- -------- SLIDE 1 -------- -->
 <div id="slide1" class="slide active">
-  <img src="assets/innovine-logo.png" class="logo" alt="Logo">
-  <button class="start-btn" onclick="startGame()">Start Game</button>
+    <!-- FIXED LOGO -->
+    <img src="assets/innovine.png" class="logo" onerror="this.style.display='none'">
+    
+    <button onclick="startGame()">Start Game</button>
 </div>
 
-<!-- ----------- SLIDE 2 ----------- -->
+<!-- -------- SLIDE 2 -------- -->
 <div id="slide2" class="slide">
 
-<div class="title">🐠 Match the marine animals to the correct Ocean Zone 🌊</div>
+    <div class="title">🌊 match the marine animals to the correct ocean zone 🌊</div>
 
-<div class="game-container">
+    <div class="game">
 
-<!-- LEFT -->
-<div>
-  <div class="animal" draggable="true" data-zone="sunlight"><img src="assets/dolphin.png"><div>Dolphin</div></div>
-  <div class="animal" draggable="true" data-zone="twilight"><img src="assets/squid.png"><div>Squid</div></div>
-  <div class="animal" draggable="true" data-zone="twilight"><img src="assets/octopus.png"><div>Octopus</div></div>
-  <div class="animal" draggable="true" data-zone="midnight"><img src="assets/anglerfish.png"><div>Anglerfish</div></div>
-  <div class="animal" draggable="true" data-zone="sunlight"><img src="assets/starfish.png"><div>Starfish</div></div>
-</div>
+        <!-- LEFT -->
+        <div class="column">
+            <div class="card" draggable="true" data-zone="sunlight">
+                <img src="assets/dolphin.png"><div>dolphin</div>
+            </div>
+            <div class="card" draggable="true" data-zone="twilight">
+                <img src="assets/squid.png"><div>squid</div>
+            </div>
+            <div class="card" draggable="true" data-zone="twilight">
+                <img src="assets/octopus.png"><div>octopus</div>
+            </div>
+            <div class="card" draggable="true" data-zone="midnight">
+                <img src="assets/anglerfish.png"><div>anglerfish</div>
+            </div>
+            <div class="card" draggable="true" data-zone="sunlight">
+                <img src="assets/starfish.png"><div>starfish</div>
+            </div>
+        </div>
 
-<!-- CENTER -->
-<div class="zone-container">
-  <div class="zone">
-    <div class="drop sunlight"></div>
-    <div class="drop twilight"></div>
-    <div class="drop midnight"></div>
-  </div>
-</div>
+        <!-- CENTER (IMPORTANT FIX) -->
+        <div class="zone-container">
+            <div class="zone-image">
+                <!-- OCEAN IMAGE BACK -->
+                <img src="assets/ocean.png" style="width:100%; height:100%; border-radius:20px;">
 
-<!-- RIGHT -->
-<div>
-  <div class="animal" draggable="true" data-zone="sunlight"><img src="assets/clownfish.png"><div>Clownfish</div></div>
-  <div class="animal" draggable="true" data-zone="twilight"><img src="assets/jellyfish.png"><div>Jellyfish</div></div>
-  <div class="animal" draggable="true" data-zone="sunlight"><img src="assets/seaturtle.png"><div>Sea Turtle</div></div>
-  <div class="animal" draggable="true" data-zone="midnight"><img src="assets/shrimp.png"><div>Shrimp</div></div>
-  <div class="animal" draggable="true" data-zone="midnight"><img src="assets/eel.png"><div>Eel</div></div>
-</div>
+                <!-- DROP ZONES -->
+                <div class="zone sunlight"></div>
+                <div class="zone twilight"></div>
+                <div class="zone midnight"></div>
+            </div>
+        </div>
 
-</div>
+        <!-- RIGHT -->
+        <div class="column">
+            <div class="card" draggable="true" data-zone="sunlight">
+                <img src="assets/clownfish.png"><div>clownfish</div>
+            </div>
+            <div class="card" draggable="true" data-zone="twilight">
+                <img src="assets/jellyfish.png"><div>jellyfish</div>
+            </div>
+            <div class="card" draggable="true" data-zone="sunlight">
+                <img src="assets/seaturtle.png"><div>sea turtle</div>
+            </div>
+            <div class="card" draggable="true" data-zone="twilight">
+                <img src="assets/shrimp.png"><div>shrimp</div>
+            </div>
+            <div class="card" draggable="true" data-zone="midnight">
+                <img src="assets/eel.png"><div>eel</div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
 function startGame() {
-  document.getElementById("slide1").classList.remove("active");
-  document.getElementById("slide2").classList.add("active");
+    document.getElementById("slide1").classList.remove("active");
+    document.getElementById("slide2").classList.add("active");
 }
 
+/* DRAG LOGIC (FIXED) */
 let dragged;
 
-document.querySelectorAll('.animal').forEach(item => {
-  item.addEventListener('dragstart', () => {
-    dragged = item;
-  });
+document.querySelectorAll(".card").forEach(card => {
+    card.addEventListener("dragstart", () => {
+        dragged = card;
+    });
 });
 
-document.querySelectorAll('.drop').forEach(zone => {
+document.querySelectorAll(".zone").forEach(zone => {
 
-  zone.addEventListener('dragover', e => e.preventDefault());
+    zone.addEventListener("dragover", e => e.preventDefault());
 
-  zone.addEventListener('drop', () => {
+    zone.addEventListener("drop", function() {
+        const correctZone = dragged.getAttribute("data-zone");
 
-    if (dragged.dataset.zone === zone.classList[1]) {
-      zone.appendChild(dragged);
-      dragged.classList.add("correct");
-    } else {
-      dragged.classList.add("wrong");
-      setTimeout(() => dragged.classList.remove("wrong"), 500);
-    }
-
-  });
-
+        if (this.classList.contains(correctZone)) {
+            this.appendChild(dragged);
+            dragged.classList.add("correct");
+        } else {
+            dragged.classList.add("wrong");
+            setTimeout(() => dragged.classList.remove("wrong"), 1000);
+        }
+    });
 });
 </script>
 
