@@ -3,149 +3,140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marine Animal Game</title>
+<title>Marine Game</title>
 
 <style>
 body {
-  margin: 0;
-  font-family: 'Comic Sans MS', sans-serif;
-  overflow: hidden;
+  margin:0;
+  font-family: 'Comic Sans MS';
+  overflow:hidden;
 }
 
 /* SLIDES */
 .slide {
-  display: none;
-  width: 100vw;
-  height: 100vh;
+  display:none;
+  width:100vw;
+  height:100vh;
 }
-
 .active {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 /* SLIDE 1 */
 #slide1 {
-  background: white;
+  background:white;
 }
-
 #slide1 img {
-  width: 200px;
+  width:220px;
 }
 
-/* SLIDE 2 */
+/* SLIDE 2 BACKGROUND */
 #slide2 {
-  flex-direction: column;
-  background: linear-gradient(#bde0fe, #a2d2ff);
+  flex-direction:column;
+  background: url("assets/background3.jpg") no-repeat center/cover;
+  border:10px solid #ffafcc;
+  box-sizing:border-box;
 }
 
 /* INSTRUCTION */
 .instruction {
-  font-size: 20px;
-  font-weight: bold;
-  color: #003049;
-  text-align: center;
-  margin: 10px;
-  background: #fff3cd;
-  padding: 10px;
-  border-radius: 15px;
+  background:#fff3cd;
+  padding:10px 20px;
+  border-radius:20px;
+  font-size:20px;
+  font-weight:bold;
+  margin-top:10px;
 }
 
-/* GAME LAYOUT */
+/* GAME */
 .game {
-  display: flex;
-  width: 100%;
-  height: 85%;
+  display:flex;
+  width:100%;
+  height:90%;
 }
 
 /* COLUMNS */
 .column {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-evenly;
+  align-items:center;
 }
 
-/* ANIMAL CARDS */
+/* CARDS */
 .card {
-  width: 70px;
-  text-align: center;
-  border: 3px solid #ffafcc;
-  border-radius: 15px;
-  padding: 5px;
-  background: white;
+  width:70px;
+  background:white;
+  border-radius:15px;
+  border:3px solid #ffafcc;
+  text-align:center;
+  padding:5px;
+}
+.card img { width:100%; }
+.card p { margin:2px; font-size:12px; }
+
+/* CENTER IMAGE */
+.center {
+  position:relative;
+}
+.center img {
+  width:250px;
 }
 
-.card img {
-  width: 100%;
-}
-
-.card p {
-  margin: 2px;
-  font-size: 12px;
-}
-
-/* ZONES */
+/* ZONE POSITIONS */
 .zone {
-  width: 90%;
-  height: 30%;
-  border: 3px dashed #023047;
-  border-radius: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  background: rgba(255,255,255,0.6);
+  position:absolute;
+  width:100%;
+  height:33%;
+  left:0;
+}
+.sunlight { top:0; }
+.twilight { top:33%; }
+.midnight { top:66%; }
+
+/* MOVE ANIMATION */
+.move {
+  position:absolute;
+  transition: all 0.8s ease;
+  z-index:5;
 }
 
-/* ANIMATION */
-.correct {
-  animation: swim 1s forwards;
-}
-
-@keyframes swim {
-  from { transform: translateX(0); }
-  to { transform: translateX(100px); }
-}
-
+/* WRONG */
 .wrong {
-  animation: shake 0.4s;
+  animation:shake 0.4s;
 }
-
 @keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-5px)}
+  50%{transform:translateX(5px)}
+  75%{transform:translateX(-5px)}
+  100%{transform:translateX(0)}
 }
 
 /* SLIDE 3 */
 #slide3 {
-  background: #90dbf4;
-  flex-direction: column;
+  background:#90dbf4;
+  flex-direction:column;
 }
-
 #slide3 h1 {
-  font-size: 40px;
-  color: white;
+  font-size:40px;
+  color:white;
 }
-
 .dance {
-  animation: bounce 1s infinite;
+  animation:bounce 1s infinite;
 }
-
 @keyframes bounce {
   0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-10px)}
+  50%{transform:translateY(-15px)}
 }
 
-/* MOBILE OPTIMIZATION */
+/* MOBILE */
 @media(max-width:600px){
-  .card { width: 60px; }
-  .instruction { font-size:16px; }
+  .center img { width:180px; }
+  .card { width:55px; }
 }
 </style>
 </head>
@@ -159,90 +150,102 @@ body {
 
 <!-- SLIDE 2 -->
 <div id="slide2" class="slide">
-  
-  <div class="instruction">
-    🐠 Match the marine animals to the correct Ocean Zone! 🌊
-  </div>
 
-  <div class="game">
+<div class="instruction">
+🐠 Match the marine animals to the correct Ocean Zone 🌊
+</div>
 
-    <!-- LEFT COLUMN -->
-    <div class="column">
-      <div class="card" onclick="selectAnimal(this,'sunlight')"><img src="assets/dolphin.png"><p>Dolphin</p></div>
-      <div class="card" onclick="selectAnimal(this,'twilight')"><img src="assets/squid.png"><p>Squid</p></div>
-      <div class="card" onclick="selectAnimal(this,'twilight')"><img src="assets/octopus.png"><p>Octopus</p></div>
-      <div class="card" onclick="selectAnimal(this,'midnight')"><img src="assets/anglerfish.png"><p>Anglerfish</p></div>
-      <div class="card" onclick="selectAnimal(this,'sunlight')"><img src="assets/starfish.png"><p>Starfish</p></div>
-    </div>
+<div class="game">
 
-    <!-- CENTER COLUMN -->
-    <div class="column">
-      <div class="zone" onclick="checkMatch('sunlight')">Sunlight Zone</div>
-      <div class="zone" onclick="checkMatch('twilight')">Twilight Zone</div>
-      <div class="zone" onclick="checkMatch('midnight')">Midnight Zone</div>
-    </div>
+<!-- LEFT -->
+<div class="column">
+  <div class="card" onclick="select(this,'sunlight')"><img src="assets/dolphin.png"><p>Dolphin</p></div>
+  <div class="card" onclick="select(this,'twilight')"><img src="assets/squid.png"><p>Squid</p></div>
+  <div class="card" onclick="select(this,'twilight')"><img src="assets/octopus.png"><p>Octopus</p></div>
+  <div class="card" onclick="select(this,'midnight')"><img src="assets/anglerfish.png"><p>Anglerfish</p></div>
+  <div class="card" onclick="select(this,'sunlight')"><img src="assets/starfish.png"><p>Starfish</p></div>
+</div>
 
-    <!-- RIGHT COLUMN -->
-    <div class="column">
-      <div class="card" onclick="selectAnimal(this,'sunlight')"><img src="assets/clownfish.png"><p>Clownfish</p></div>
-      <div class="card" onclick="selectAnimal(this,'twilight')"><img src="assets/jellyfish.png"><p>Jellyfish</p></div>
-      <div class="card" onclick="selectAnimal(this,'sunlight')"><img src="assets/sea turtle.png"><p>Sea Turtle</p></div>
-      <div class="card" onclick="selectAnimal(this,'twilight')"><img src="assets/shrimp.png"><p>Shrimp</p></div>
-      <div class="card" onclick="selectAnimal(this,'midnight')"><img src="assets/eel.png"><p>Eel</p></div>
-    </div>
+<!-- CENTER -->
+<div class="column center">
 
-  </div>
+<img src="assets/ocean zones.png">
+
+<div class="zone sunlight" onclick="check('sunlight')"></div>
+<div class="zone twilight" onclick="check('twilight')"></div>
+<div class="zone midnight" onclick="check('midnight')"></div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="column">
+  <div class="card" onclick="select(this,'sunlight')"><img src="assets/clownfish.png"><p>Clownfish</p></div>
+  <div class="card" onclick="select(this,'twilight')"><img src="assets/jellyfish.png"><p>Jellyfish</p></div>
+  <div class="card" onclick="select(this,'sunlight')"><img src="assets/sea turtle.png"><p>Sea Turtle</p></div>
+  <div class="card" onclick="select(this,'twilight')"><img src="assets/shrimp.png"><p>Shrimp</p></div>
+  <div class="card" onclick="select(this,'midnight')"><img src="assets/eel.png"><p>Eel</p></div>
+</div>
+
+</div>
 </div>
 
 <!-- SLIDE 3 -->
 <div id="slide3" class="slide">
-  <h1>🎉 Great Job! 🎉</h1>
-  <img src="assets/starfish.png" class="dance" width="80">
-  <img src="assets/fish.png" class="dance" width="80">
+<h1>🎉 Great Job! 🎉</h1>
+<img src="assets/starfish.png" class="dance" width="80">
+<img src="assets/clownfish.png" class="dance" width="80">
 </div>
 
 <!-- AUDIO -->
-<audio id="correctSound" src="assets/clapping music.mp3"></audio>
-<audio id="wrongSound" src="assets/wrong music.mp3"></audio>
+<audio id="correct" src="assets/clapping music.mp3"></audio>
+<audio id="wrong" src="assets/wrong music.mp3"></audio>
 
 <script>
-let selected = null;
-let correctZone = null;
-let matchedCount = 0;
+let selected=null;
+let correctZone=null;
+let count=0;
 
-function selectAnimal(el, zone){
-  selected = el;
-  correctZone = zone;
+function select(el,zone){
+  selected=el;
+  correctZone=zone;
 }
 
-function checkMatch(zone){
+function check(zone){
   if(!selected) return;
 
-  if(zone === correctZone){
-    selected.classList.add("correct");
-    document.getElementById("correctSound").play();
-    selected.onclick = null;
-    matchedCount++;
+  if(zone===correctZone){
+
+    let rect=document.querySelector("." + zone).getBoundingClientRect();
+    selected.classList.add("move");
+
+    selected.style.position="absolute";
+    selected.style.left=rect.left + 20 + "px";
+    selected.style.top=rect.top + 20 + "px";
+
+    document.getElementById("correct").play();
+    selected.onclick=null;
+    count++;
+
   } else {
     selected.classList.add("wrong");
-    document.getElementById("wrongSound").play();
+    document.getElementById("wrong").play();
     setTimeout(()=>selected.classList.remove("wrong"),400);
   }
 
-  selected = null;
+  selected=null;
 
-  if(matchedCount === 10){
+  if(count===10){
     setTimeout(()=>{
-      document.getElementById("slide2").classList.remove("active");
-      document.getElementById("slide3").classList.add("active");
+      slide2.classList.remove("active");
+      slide3.classList.add("active");
     },1000);
   }
 }
 
-/* AUTO START */
+/* AUTO SLIDE */
 setTimeout(()=>{
-  document.getElementById("slide1").classList.remove("active");
-  document.getElementById("slide2").classList.add("active");
+  slide1.classList.remove("active");
+  slide2.classList.add("active");
 },2000);
 </script>
 
