@@ -1,157 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ocean Zones Game</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
+body{margin:0;font-family:Comic Sans MS;overflow:hidden;}
+
+.slide{
+width:100vw;height:100vh;position:absolute;display:none;
+}
+.active{display:flex;}
+
+/* SLIDE 1 */
+#slide1{
+background:white;justify-content:center;align-items:center;
+}
+#slide1 img{width:250px;}
+
+/* SLIDE 2 */
+#slide2{
+background:url("assets/slide 2 background.png") no-repeat center/cover;
+flex-direction:column;
 }
 
-body {
-  overflow: hidden;
+#title{
+text-align:center;
+font-size:26px;
+font-weight:bold;
+color:white;
+margin:10px;
 }
 
-/* SLIDES */
-.slide {
-  width: 100vw;
-  height: 100vh;
-  display: none;
-  position: relative;
+/* LAYOUT */
+.container{display:flex;height:90%;}
+
+/* LEFT */
+#left{
+width:30%;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:15px;
 }
 
-.active {
-  display: flex;
+/* BUBBLE */
+.animal{
+width:110px;height:110px;
+border-radius:50%;
+background:rgba(255,255,255,0.6);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+animation:bounce 2s infinite;
 }
 
-/* ---------- SLIDE 1 ---------- */
-#slide1 {
-  background: white;
-  justify-content: center;
-  align-items: center;
+.animal img{
+width:80px;height:80px;
+object-fit:contain;
 }
 
-#logo {
-  width: 200px;
+.label{font-size:12px;}
+
+@keyframes bounce{
+50%{transform:translateY(-8px);}
 }
 
-/* ---------- SLIDE 2 ---------- */
-#slide2 {
-  background: url('assets/background.jpg') no-repeat center/cover;
-  flex-direction: column;
+/* RIGHT */
+#right{width:70%;position:relative;}
+
+#ocean{
+width:100%;
+height:100%;
+object-fit:contain;
 }
 
-/* Instruction */
-#instruction {
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  color: black;
-  margin: 10px;
+/* ZONES */
+.zone{
+position:absolute;
+width:60%;
+height:20%;
+border:2px dashed white;
+border-radius:10px;
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+padding:5px;
 }
 
-/* Layout */
-.game-container {
-  display: flex;
-  height: 100%;
+#sun{top:12%;left:20%;}
+#twi{top:40%;left:20%;}
+#mid{top:68%;left:20%;}
+
+.zone img{
+width:70px;height:70px;
 }
 
-/* LEFT SIDE ANIMALS */
-.left-panel {
-  width: 35%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* SLIDE 3 */
+#slide3{
+background:linear-gradient(#4facfe,#00f2fe);
+justify-content:center;
+align-items:center;
+flex-direction:column;
+color:white;
+font-size:40px;
 }
 
-.bubble {
-  width: 80px;
-  height: 80px;
-  margin: 8px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  animation: bounce 2s infinite;
-}
-
-.bubble img {
-  width: 50px;
-  height: 50px;
-}
-
-.label {
-  font-size: 12px;
-}
-
-/* RIGHT SIDE ZONES */
-.right-panel {
-  width: 65%;
-  position: relative;
-}
-
-#zones {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* Click zones */
-.zone {
-  position: absolute;
-  width: 100%;
-  height: 33%;
-}
-
-#sunlight { top: 0; }
-#twilight { top: 33%; }
-#midnight { top: 66%; }
-
-/* ---------- SLIDE 3 ---------- */
-#slide3 {
-  background: linear-gradient(#00bcd4, #001f3f);
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-#message {
-  font-size: 40px;
-  color: white;
-  font-weight: bold;
-}
-
-.fish {
-  position: absolute;
-  width: 60px;
-  animation: swim 6s linear infinite;
-}
-
-/* ANIMATIONS */
-@keyframes bounce {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes swim {
-  from { left: -100px; }
-  to { left: 110%; }
-}
-
-/* MOBILE */
-@media (max-width: 768px) {
-  #instruction { font-size: 16px; }
-  .bubble { width: 60px; height: 60px; }
-  .bubble img { width: 40px; height: 40px; }
-}
 </style>
 </head>
 
@@ -159,126 +114,123 @@ body {
 
 <!-- SLIDE 1 -->
 <div id="slide1" class="slide active">
-  <img id="logo" src="assets/innovine.png">
+<img src="assets/innovine_logo.png">
 </div>
 
 <!-- SLIDE 2 -->
 <div id="slide2" class="slide">
-  <div id="instruction">
-    Match the marine animal to the correct ocean zone
-  </div>
 
-  <div class="game-container">
+<div id="title">Match the marine animal to the correct ocean zone</div>
 
-    <!-- LEFT -->
-    <div class="left-panel" id="animals"></div>
+<div class="container">
 
-    <!-- RIGHT -->
-    <div class="right-panel">
-      <img id="zones" src="assets/ocean_zones.png">
+<div id="left"></div>
 
-      <div id="sunlight" class="zone" onclick="selectZone('sunlight')"></div>
-      <div id="twilight" class="zone" onclick="selectZone('twilight')"></div>
-      <div id="midnight" class="zone" onclick="selectZone('midnight')"></div>
-    </div>
+<div id="right">
+<img id="ocean" src="assets/ocean_zone.png">
 
-  </div>
+<div id="sun" class="zone" data-zone="sunlight"></div>
+<div id="twi" class="zone" data-zone="twilight"></div>
+<div id="mid" class="zone" data-zone="midnight"></div>
+
+</div>
+</div>
 </div>
 
 <!-- SLIDE 3 -->
 <div id="slide3" class="slide">
-  <div id="message">Great Job!</div>
+🎉 Great Job! 🐠
 </div>
-
-<!-- AUDIO -->
-<audio id="correctSound" src="assets/clap.mp3"></audio>
-<audio id="wrongSound" src="assets/wrong.mp3"></audio>
 
 <script>
 
-/* DATA */
-const animals = [
-  {name:"anglerfish", img:"anglerfish.png", zone:"midnight"},
-  {name:"dolphin", img:"dolphin.png", zone:"sunlight"},
-  {name:"eel", img:"eel.png", zone:"midnight"},
-  {name:"jellyfish", img:"jellyfish.png", zone:"twilight"},
-  {name:"seaturtle", img:"seaturtle.png", zone:"sunlight"},
-  {name:"shrimp", img:"shrimp.png", zone:"twilight"},
-  {name:"squid", img:"squid.png", zone:"twilight"},
-  {name:"starfish", img:"starfish.png", zone:"sunlight"}
+/* SLIDE SWITCH */
+setTimeout(()=>{
+slide1.classList.remove("active");
+slide2.classList.add("active");
+},2000);
+
+/* AUDIO */
+const correct=new Audio("assets/clapping music.mp3");
+const wrong=new Audio("assets/wrong music.mp3");
+
+/* DATA (EXACT FILE NAMES) */
+const animals=[
+["anglerfish.png","midnight","anglerfish"],
+["clownfish.png","sunlight","clownfish"],
+["dolphin.png","sunlight","dolphin"],
+["eel.png","midnight","eel"],
+["jellyfish.png","twilight","jellyfish"],
+["octopus.png","twilight","octopus"],
+["sea turtle.png","sunlight","seaturtle"],  // IMPORTANT
+["shrimp.png","twilight","shrimp"],
+["squid.png","twilight","squid"],
+["starfish.png","sunlight","starfish"]
 ];
 
-let selectedAnimal = null;
-let matchedCount = 0;
+const left=document.getElementById("left");
 
-/* CREATE ANIMALS */
-const container = document.getElementById("animals");
-
-animals.forEach(a => {
-  let div = document.createElement("div");
-  div.className = "bubble";
-  div.innerHTML = `
-    <img src="assets/${a.img}">
-    <div class="label">${a.name}</div>
-  `;
-  div.onclick = () => selectAnimal(div, a);
-  container.appendChild(div);
+/* CREATE */
+animals.forEach(a=>{
+let d=document.createElement("div");
+d.className="animal";
+d.innerHTML=`
+<img src="assets/${a[0]}">
+<div class="label">${a[2]}</div>
+`;
+d.dataset.zone=a[1];
+drag(d);
+left.appendChild(d);
 });
 
-/* SELECT ANIMAL */
-function selectAnimal(div, animal) {
-  selectedAnimal = {div, animal};
+/* DRAG */
+function drag(el){
+let ox,oy;
+
+el.onpointerdown=e=>{
+ox=e.offsetX;oy=e.offsetY;
+el.setPointerCapture(e.pointerId);
+el.style.position="absolute";
 }
 
-/* SELECT ZONE */
-function selectZone(zone) {
-  if (!selectedAnimal) return;
-
-  if (selectedAnimal.animal.zone === zone) {
-    document.getElementById("correctSound").play();
-
-    // swim animation
-    selectedAnimal.div.style.position = "absolute";
-    selectedAnimal.div.style.left = "40%";
-    selectedAnimal.div.style.top = "50%";
-
-    setTimeout(() => {
-      selectedAnimal.div.style.display = "none";
-    }, 1000);
-
-    matchedCount++;
-
-    if (matchedCount === animals.length) {
-      setTimeout(showSlide3, 1500);
-    }
-
-  } else {
-    document.getElementById("wrongSound").play();
-  }
-
-  selectedAnimal = null;
+el.onpointermove=e=>{
+if(el.hasPointerCapture(e.pointerId)){
+el.style.left=e.clientX-ox+"px";
+el.style.top=e.clientY-oy+"px";
+}
 }
 
-/* SHOW FINAL SLIDE */
-function showSlide3() {
-  document.getElementById("slide2").classList.remove("active");
-  document.getElementById("slide3").classList.add("active");
-
-  // add swimming fish
-  for (let i=0; i<5; i++) {
-    let fish = document.createElement("img");
-    fish.src = "assets/dolphin.png";
-    fish.className = "fish";
-    fish.style.top = Math.random()*80 + "%";
-    document.getElementById("slide3").appendChild(fish);
-  }
+el.onpointerup=e=>{
+el.releasePointerCapture(e.pointerId);
+drop(el);
+}
 }
 
-/* AUTO SLIDE CHANGE */
-setTimeout(() => {
-  document.getElementById("slide1").classList.remove("active");
-  document.getElementById("slide2").classList.add("active");
-}, 2000);
+/* DROP */
+function drop(el){
+document.querySelectorAll(".zone").forEach(z=>{
+let r=z.getBoundingClientRect();
+let e=el.getBoundingClientRect();
+
+if(e.left<r.right && e.right>r.left && e.top<r.bottom && e.bottom>r.top){
+
+if(z.dataset.zone===el.dataset.zone){
+correct.play();
+z.appendChild(el);
+el.style.position="relative";
+}else{
+wrong.play();
+reset(el);
+}
+}
+});
+}
+
+function reset(el){
+el.style.position="relative";
+el.style.left="";
+el.style.top="";
+}
 
 </script>
 
