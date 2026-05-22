@@ -2,246 +2,391 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Ocean Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ocean Zone Matching Challenge</title>
 
 <style>
+/* =========================
+   GLOBAL STYLES
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Comic Sans MS', sans-serif;
+}
+
 body {
-    margin: 0;
-    font-family: 'Comic Sans MS', cursive;
+  overflow: hidden;
 }
 
-/* -------- SLIDE CONTROL -------- */
-#slide1 { display: block; }
-#slide2 { display: none; }
-
-/* -------- SLIDE 1 -------- */
-#slide1 {
-    height: 100vh;
-    background: linear-gradient(to bottom, #74c0fc, #a5d8ff);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/* =========================
+   SLIDE 1 (LOGO)
+========================= */
+#intro {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
-.logo {
-    width: 180px;
-    margin-bottom: 20px;
+#intro img {
+  max-width: 200px;
 }
 
-button {
-    padding: 15px 30px;
-    font-size: 20px;
-    border-radius: 20px;
-    border: none;
-    background: #ff6b6b;
-    color: white;
-    cursor: pointer;
+/* =========================
+   MAIN GAME LAYOUT
+========================= */
+#game {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
 }
 
-/* -------- SLIDE 2 -------- */
-#slide2 {
-    height: 100vh;
-    background: url("assets/bg1.png") no-repeat center;
-    background-size: cover;
-    display: flex;
-    flex-direction: column;
+/* LEFT PANEL */
+#leftPanel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 25%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  z-index: 2;
 }
 
-/* title */
-.title {
-    text-align: center;
-    background: #ffd6e0;
-    padding: 10px;
-    border-radius: 20px;
-    margin: 10px auto;
-    font-size: 18px;
+/* ANIMAL BUBBLE */
+.animal {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  cursor: grab;
+  position: relative;
+  transition: transform 0.5s ease;
 }
 
-/* layout */
-.game {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    flex: 1;
+.label {
+  position: absolute;
+  bottom: -18px;
+  font-size: 10px;
+  text-transform: lowercase;
 }
 
-/* columns */
-.column {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-/* animal cards */
-.card {
-    width: 100px;
-    background: white;
-    padding: 8px;
-    border-radius: 15px;
-    border: 2px solid pink;
-    text-align: center;
-    cursor: grab;
-}
-
-.card img {
-    width: 80px;
-}
-
-/* CENTER ZONE */
-.zone-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.zone-image {
-    width: 320px;
-    height: 520px;
-    position: relative;
-}
-
-.zone-image img {
-    width: 100%;
-    height: 100%;
-    border-radius: 20px;
-}
-
-/* DROP ZONES */
+/* ZONES */
 .zone {
-    position: absolute;
-    width: 100%;
-    height: 33%;
+  position: absolute;
+  left: 25%;
+  width: 75%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
-.sunlight { top: 0; }
-.twilight { top: 33%; }
-.midnight { top: 66%; }
-
-/* feedback */
-.correct {
-    border: 3px solid green !important;
+/* SUNLIGHT */
+#sunlight {
+  top: 0;
+  height: 33%;
+  background: #A0E0FF;
 }
-.wrong {
-    border: 3px solid red !important;
+
+/* TWILIGHT */
+#twilight {
+  top: 33%;
+  height: 33%;
+  background: #2060A0;
+}
+
+/* MIDNIGHT */
+#midnight {
+  top: 66%;
+  height: 34%;
+  background: #0A1020;
+  overflow: hidden;
+}
+
+/* GLOWING DOTS */
+.dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #6cf;
+  border-radius: 50%;
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from { opacity: 0.2; }
+  to { opacity: 1; }
+}
+
+/* ZONE TITLE */
+.zone h2 {
+  color: white;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+/* DROP AREA */
+.dropzone {
+  width: 80%;
+  height: 50%;
+  border: 2px dashed white;
+  border-radius: 10px;
+  position: relative;
+}
+
+/* CONFETTI */
+.star {
+  position: absolute;
+  color: yellow;
+  font-size: 12px;
+  animation: pop 1s ease forwards;
+}
+
+@keyframes pop {
+  0% { transform: scale(0); }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* MASCOT */
+#mascot {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 40px;
+}
+
+#speech {
+  position: absolute;
+  bottom: 60px;
+  right: 60px;
+  background: white;
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .animal {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
 }
 </style>
-
 </head>
 
 <body>
 
-<!-- -------- SLIDE 1 -------- -->
-<div id="slide1">
-    <!-- LOGO FIX -->
-    <img src="assets/innovine.png" class="logo"
-         onerror="this.style.display='none'">
-
-    <button id="startBtn">Start Game</button>
+<!-- INTRO SCREEN -->
+<div id="intro">
+  <img src="assets/logo.png" alt="logo">
 </div>
 
-<!-- -------- SLIDE 2 -------- -->
-<div id="slide2">
+<!-- GAME -->
+<div id="game">
 
-    <div class="title">
-        🌊 match the marine animals to the correct ocean zone 🌊
-    </div>
+  <!-- LEFT PANEL -->
+  <div id="leftPanel"></div>
 
-    <div class="game">
+  <!-- ZONES -->
+  <div id="sunlight" class="zone">
+    <h2>SUNLIGHT ZONE</h2>
+    <div class="dropzone" data-zone="sunlight"></div>
+  </div>
 
-        <!-- LEFT -->
-        <div class="column">
-            <div class="card" draggable="true" data-zone="sunlight">
-                <img src="assets/dolphin.png"><div>dolphin</div>
-            </div>
-            <div class="card" draggable="true" data-zone="twilight">
-                <img src="assets/squid.png"><div>squid</div>
-            </div>
-            <div class="card" draggable="true" data-zone="twilight">
-                <img src="assets/octopus.png"><div>octopus</div>
-            </div>
-            <div class="card" draggable="true" data-zone="midnight">
-                <img src="assets/anglerfish.png"><div>anglerfish</div>
-            </div>
-            <div class="card" draggable="true" data-zone="sunlight">
-                <img src="assets/starfish.png"><div>starfish</div>
-            </div>
-        </div>
+  <div id="twilight" class="zone">
+    <h2>TWILIGHT ZONE</h2>
+    <div class="dropzone" data-zone="twilight"></div>
+  </div>
 
-        <!-- CENTER -->
-        <div class="zone-container">
-            <div class="zone-image">
+  <div id="midnight" class="zone">
+    <h2>MIDNIGHT ZONE</h2>
+    <div class="dropzone" data-zone="midnight"></div>
+  </div>
 
-                <!-- BIG OCEAN IMAGE -->
-                <img src="assets/ocean.png">
+  <!-- MASCOT -->
+  <div id="speech">Drag us home!</div>
+  <div id="mascot">🤖</div>
 
-                <!-- DROP AREAS -->
-                <div class="zone sunlight"></div>
-                <div class="zone twilight"></div>
-                <div class="zone midnight"></div>
-
-            </div>
-        </div>
-
-        <!-- RIGHT -->
-        <div class="column">
-            <div class="card" draggable="true" data-zone="sunlight">
-                <img src="assets/clownfish.png"><div>clownfish</div>
-            </div>
-            <div class="card" draggable="true" data-zone="twilight">
-                <img src="assets/jellyfish.png"><div>jellyfish</div>
-            </div>
-            <div class="card" draggable="true" data-zone="sunlight">
-                <img src="assets/seaturtle.png"><div>sea turtle</div>
-            </div>
-            <div class="card" draggable="true" data-zone="twilight">
-                <img src="assets/shrimp.png"><div>shrimp</div>
-            </div>
-            <div class="card" draggable="true" data-zone="midnight">
-                <img src="assets/eel.png"><div>eel</div>
-            </div>
-        </div>
-
-    </div>
 </div>
 
 <script>
+/* =========================
+   INTRO TIMER
+========================= */
+setTimeout(() => {
+  document.getElementById("intro").style.display = "none";
+  document.getElementById("game").style.display = "block";
+}, 2000);
 
-/* -------- START BUTTON FIX -------- */
-document.getElementById("startBtn").onclick = function () {
-    document.getElementById("slide1").style.display = "none";
-    document.getElementById("slide2").style.display = "flex";
-};
+/* =========================
+   DATA
+========================= */
+const animals = [
+  {emoji:"🦈", name:"shark", zone:"sunlight"},
+  {emoji:"🦭", name:"seal", zone:"sunlight"},
+  {emoji:"🦑", name:"squid", zone:"twilight"},
+  {emoji:"🦞", name:"lobster", zone:"twilight"},
+  {emoji:"🐟", name:"anglerfish", zone:"midnight"},
+  {emoji:"🐍", name:"hagfish", zone:"midnight"},
+  {emoji:"🪼", name:"jellyfish", zone:"midnight"}
+];
 
-/* -------- DRAG DROP FIX -------- */
-let dragged;
+/* =========================
+   CREATE ANIMALS
+========================= */
+const leftPanel = document.getElementById("leftPanel");
 
-document.querySelectorAll(".card").forEach(card => {
-    card.addEventListener("dragstart", () => {
-        dragged = card;
-    });
+animals.forEach((a, index) => {
+  let div = document.createElement("div");
+  div.className = "animal";
+  div.innerHTML = a.emoji + `<div class="label">${a.name}</div>`;
+  div.dataset.zone = a.zone;
+  div.dataset.index = index;
+
+  makeDraggable(div);
+  leftPanel.appendChild(div);
 });
 
-document.querySelectorAll(".zone").forEach(zone => {
+/* =========================
+   DRAG + TOUCH SUPPORT
+========================= */
+function makeDraggable(el) {
+  let offsetX, offsetY;
 
-    zone.addEventListener("dragover", e => e.preventDefault());
+  el.addEventListener("pointerdown", e => {
+    offsetX = e.offsetX;
+    offsetY = e.offsetY;
+    el.setPointerCapture(e.pointerId);
 
-    zone.addEventListener("drop", function () {
+    el.style.position = "absolute";
+    el.style.zIndex = 1000;
+  });
 
-        const correct = dragged.getAttribute("data-zone");
+  el.addEventListener("pointermove", e => {
+    if (el.hasPointerCapture(e.pointerId)) {
+      el.style.left = e.clientX - offsetX + "px";
+      el.style.top = e.clientY - offsetY + "px";
+    }
+  });
 
-        if (this.classList.contains(correct)) {
-            this.appendChild(dragged);
-            dragged.classList.add("correct");
-        } else {
-            dragged.classList.add("wrong");
-            setTimeout(() => dragged.classList.remove("wrong"), 800);
-        }
+  el.addEventListener("pointerup", e => {
+    el.releasePointerCapture(e.pointerId);
+    checkDrop(el);
+  });
+}
 
-    });
+/* =========================
+   CHECK DROP
+========================= */
+function checkDrop(el) {
+  const zones = document.querySelectorAll(".dropzone");
+  let placed = false;
 
-});
+  zones.forEach(zone => {
+    const rect = zone.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
 
+    if (
+      elRect.left < rect.right &&
+      elRect.right > rect.left &&
+      elRect.top < rect.bottom &&
+      elRect.bottom > rect.top
+    ) {
+      if (zone.dataset.zone === el.dataset.zone) {
+        correctDrop(el, zone);
+      } else {
+        wrongDrop(el);
+      }
+      placed = true;
+    }
+  });
+
+  if (!placed) wrongDrop(el);
+}
+
+/* =========================
+   CORRECT DROP
+========================= */
+function correctDrop(el, zone) {
+  playSound(true);
+
+  // snap into zone
+  el.style.left = "auto";
+  el.style.top = "auto";
+  el.style.position = "relative";
+  zone.appendChild(el);
+
+  // confetti
+  for (let i = 0; i < 5; i++) {
+    let star = document.createElement("div");
+    star.className = "star";
+    star.innerHTML = "⭐";
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+    zone.appendChild(star);
+    setTimeout(() => star.remove(), 1000);
+  }
+}
+
+/* =========================
+   WRONG DROP
+========================= */
+function wrongDrop(el) {
+  playSound(false);
+  el.style.transition = "all 0.5s";
+  el.style.left = "";
+  el.style.top = "";
+  el.style.position = "relative";
+}
+
+/* =========================
+   SOUND (NO FILES)
+========================= */
+function playSound(correct) {
+  let ctx = new (window.AudioContext || window.webkitAudioContext)();
+  let osc = ctx.createOscillator();
+  let gain = ctx.createGain();
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  if (correct) {
+    osc.frequency.value = 600;
+  } else {
+    osc.frequency.value = 200;
+  }
+
+  osc.start();
+  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+}
+
+/* =========================
+   MIDNIGHT GLOW DOTS
+========================= */
+for (let i = 0; i < 30; i++) {
+  let dot = document.createElement("div");
+  dot.className = "dot";
+  dot.style.left = Math.random()*100 + "%";
+  dot.style.top = Math.random()*100 + "%";
+  document.getElementById("midnight").appendChild(dot);
+}
 </script>
 
 </body>
