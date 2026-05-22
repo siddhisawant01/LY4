@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ocean Zone Game</title>
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Comic Sans MS';}
-body{overflow:hidden;}
+
+body{
+  margin:0;
+  overflow:hidden;
+  font-family: Comic Sans MS;
+}
 
 /* SLIDES */
 .slide{
-  width:100vw;height:100vh;
+  width:100vw;
+  height:100vh;
   position:absolute;
   display:none;
 }
@@ -20,50 +22,49 @@ body{overflow:hidden;}
 /* SLIDE 1 */
 #slide1{
   background:white;
-  align-items:center;
   justify-content:center;
+  align-items:center;
 }
 #slide1 img{width:200px;}
 
-/* SLIDE 2 MAIN BACKGROUND */
+/* SLIDE 2 */
 #slide2{
-  background:url("assets/Backgroud 3(5).jpg") no-repeat center/cover;
+  background:url('assets/bg3.jpg') no-repeat center/cover;
 }
 
-/* SPLIT LAYOUT */
-#container{
+/* LAYOUT */
+.container{
   display:flex;
   width:100%;
   height:100%;
 }
 
-/* LEFT PANEL */
-#leftPanel{
+/* LEFT */
+#left{
   width:25%;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:12px;
+  gap:10px;
 }
 
-/* RIGHT PANEL (THIS WAS MISSING BEFORE) */
-#rightPanel{
+/* RIGHT */
+#right{
   width:75%;
-  height:100%;
   position:relative;
 }
 
-/* OCEAN ZONE IMAGE */
-#oceanBG{
+/* OCEAN IMAGE */
+#ocean{
   position:absolute;
   width:100%;
   height:100%;
-  object-fit:contain;   /* IMPORTANT */
+  object-fit:contain;
 }
 
-/* ZONE DROP AREAS */
-.dropzone{
+/* DROP ZONES */
+.zone{
   position:absolute;
   width:60%;
   height:18%;
@@ -75,53 +76,33 @@ body{overflow:hidden;}
   padding:5px;
 }
 
-/* POSITION MATCHING YOUR IMAGE */
-#sun{ top:15%; left:20%; }
-#twi{ top:40%; left:20%; }
-#mid{ top:65%; left:20%; }
+#sun{top:15%; left:20%;}
+#twi{top:40%; left:20%;}
+#mid{top:65%; left:20%;}
 
-/* ANIMAL BUBBLES */
+/* ANIMALS */
 .animal{
-  width:65px;height:65px;
+  width:60px;height:60px;
   border-radius:50%;
   background:rgba(255,255,255,0.6);
   display:flex;
-  flex-direction:column;
   align-items:center;
   justify-content:center;
   animation:bounce 2s infinite;
-  cursor:pointer;
 }
-
-.animal img{width:45px;height:45px;}
-.label{font-size:10px;}
+.animal img{width:40px;}
 
 @keyframes bounce{
-  0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-6px);}
+  50%{transform:translateY(-5px);}
 }
 
 /* SLIDE 3 */
 #slide3{
-  background:url("assets/Backgroud 2(5).jpg") no-repeat center/cover;
-  flex-direction:column;
-  align-items:center;
+  background:url('assets/bg2.jpg') no-repeat center/cover;
   justify-content:center;
+  align-items:center;
   color:white;
   font-size:40px;
-}
-
-/* FLOATING BUBBLES */
-.bubble{
-  position:absolute;
-  width:10px;height:10px;
-  background:white;
-  border-radius:50%;
-  animation:float 6s infinite;
-}
-@keyframes float{
-  from{transform:translateY(100px);}
-  to{transform:translateY(-100px);}
 }
 
 </style>
@@ -129,76 +110,61 @@ body{overflow:hidden;}
 
 <body>
 
-<!-- SLIDE 1 -->
 <div id="slide1" class="slide active">
-  <img src="assets/innovine_logo.png">
+<img src="assets/innovine_logo.png">
 </div>
 
-<!-- SLIDE 2 -->
 <div id="slide2" class="slide">
+<div class="container">
 
-<div id="container">
+<div id="left"></div>
 
-  <!-- LEFT -->
-  <div id="leftPanel"></div>
+<div id="right">
+<img id="ocean" src="assets/ocean_zones.png">
 
-  <!-- RIGHT -->
-  <div id="rightPanel">
+<div id="sun" class="zone" data-zone="sunlight"></div>
+<div id="twi" class="zone" data-zone="twilight"></div>
+<div id="mid" class="zone" data-zone="midnight"></div>
 
-    <!-- THIS IS YOUR OCEAN IMAGE -->
-    <img id="oceanBG" src="assets/ocean_zones.png">
-
-    <!-- DROP ZONES -->
-    <div id="sun" class="dropzone" data-zone="sunlight"></div>
-    <div id="twi" class="dropzone" data-zone="twilight"></div>
-    <div id="mid" class="dropzone" data-zone="midnight"></div>
-
-  </div>
+</div>
 
 </div>
 </div>
 
-<!-- SLIDE 3 -->
 <div id="slide3" class="slide">
-  <h1>🎉 GOOD JOB! 🎉</h1>
+🎉 GOOD JOB 🎉
 </div>
 
 <script>
 
-/* SLIDE SWITCH */
 setTimeout(()=>{
 slide1.classList.remove("active");
 slide2.classList.add("active");
 },2000);
 
-/* AUDIO */
-const correctSound=new Audio("assets/clapping music.mp3");
-const wrongSound=new Audio("assets/wrong music.mp3");
-
 /* DATA */
 const animals=[
-{img:"assets/anglerfish.png",zone:"midnight"},
-{img:"assets/clownfish.png",zone:"sunlight"},
-{img:"assets/dolphin.png",zone:"sunlight"},
-{img:"assets/eel.png",zone:"midnight"},
-{img:"assets/jellyfish.png",zone:"twilight"},
-{img:"assets/octopus.png",zone:"twilight"},
-{img:"assets/sea turtle.png",zone:"sunlight"},
-{img:"assets/shrimp.png",zone:"twilight"},
-{img:"assets/squid.png",zone:"twilight"},
-{img:"assets/starfish.png",zone:"sunlight"}
+["anglerfish.png","midnight"],
+["clownfish.png","sunlight"],
+["dolphin.png","sunlight"],
+["eel.png","midnight"],
+["jellyfish.png","twilight"],
+["octopus.png","twilight"],
+["sea turtle.png","sunlight"],
+["shrimp.png","twilight"],
+["squid.png","twilight"],
+["starfish.png","sunlight"]
 ];
 
-const leftPanel=document.getElementById("leftPanel");
+const left=document.getElementById("left");
 
-/* CREATE */
 animals.forEach(a=>{
 let d=document.createElement("div");
 d.className="animal";
-d.innerHTML=`<img src="${a.img}">`;
-d.dataset.zone=a.zone;
+d.innerHTML=`<img src="assets/${a[0]}">`;
+d.dataset.zone=a[1];
 drag(d);
-leftPanel.appendChild(d);
+left.appendChild(d);
 });
 
 /* DRAG */
@@ -226,18 +192,24 @@ drop(el);
 
 /* DROP */
 function drop(el){
-document.querySelectorAll(".dropzone").forEach(z=>{
+document.querySelectorAll(".zone").forEach(z=>{
 let r=z.getBoundingClientRect();
 let e=el.getBoundingClientRect();
 
-if(e.left<r.right && e.right>r.left && e.top<r.bottom && e.bottom>r.top){
+if(e.left<r.right&&e.right>r.left&&e.top<r.bottom&&e.bottom>r.top){
 
 if(z.dataset.zone===el.dataset.zone){
-correctSound.play();
 z.appendChild(el);
 el.style.position="relative";
+
+if(left.children.length===0){
+setTimeout(()=>{
+slide2.classList.remove("active");
+slide3.classList.add("active");
+},1000);
+}
+
 }else{
-wrongSound.play();
 reset(el);
 }
 }
