@@ -1,18 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ocean Zones Game</title>
 
 <style>
-*{
+body{
   margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Comic Sans MS';
+  font-family:Comic Sans MS;
+  overflow:hidden;
 }
-body{overflow:hidden;}
 
 /* SLIDES */
 .slide{
@@ -26,10 +23,10 @@ body{overflow:hidden;}
 /* SLIDE 1 */
 #slide1{
   background:white;
-  align-items:center;
   justify-content:center;
+  align-items:center;
 }
-#slide1 img{width:220px;}
+#slide1 img{width:250px;}
 
 /* SLIDE 2 */
 #slide2{
@@ -38,110 +35,119 @@ body{overflow:hidden;}
 }
 
 /* INSTRUCTION */
-#instruction{
+#title{
   text-align:center;
-  font-size:22px;
+  font-size:26px;
   font-weight:bold;
   color:white;
-  margin-top:10px;
-  text-shadow:2px 2px 4px black;
+  margin:10px;
+  text-shadow:2px 2px 5px black;
 }
 
 /* LAYOUT */
-#container{
+.container{
   display:flex;
   height:90%;
 }
 
 /* LEFT PANEL */
 #left{
-  width:25%;
+  width:28%;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:10px;
+  gap:12px;
 }
 
-/* ANIMAL BUBBLES */
+/* BUBBLE */
 .animal{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.5);
+  backdrop-filter: blur(4px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  animation:float 2s infinite;
+  box-shadow:0 0 10px rgba(255,255,255,0.6);
+}
+
+.animal img{
   width:65px;
   height:65px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.6);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  animation:bounce 2s infinite;
-  position:relative;
-}
-.animal img{
-  width:45px;
-  height:45px;
-}
-.label{
-  font-size:10px;
+  object-fit:contain;
 }
 
-/* BOUNCE */
-@keyframes bounce{
+.label{
+  font-size:11px;
+}
+
+/* FLOAT */
+@keyframes float{
   0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-6px);}
+  50%{transform:translateY(-8px);}
 }
 
 /* RIGHT PANEL */
 #right{
-  width:75%;
+  width:72%;
   position:relative;
 }
 
-/* OCEAN IMAGE */
+/* OCEAN IMAGE (NO BLUR NOW) */
 #ocean{
-  position:absolute;
   width:100%;
   height:100%;
   object-fit:contain;
 }
 
-/* DROP ZONES */
+/* ZONES */
 .zone{
   position:absolute;
   width:60%;
-  height:18%;
+  height:20%;
   border:2px dashed white;
   border-radius:10px;
   display:flex;
   flex-wrap:wrap;
-  gap:5px;
+  align-items:center;
   padding:5px;
+  gap:8px;
 }
 
 /* POSITION */
-#sun{top:15%; left:20%;}
+#sun{top:12%; left:20%;}
 #twi{top:40%; left:20%;}
-#mid{top:65%; left:20%;}
+#mid{top:68%; left:20%;}
+
+/* FIXED SIZE INSIDE ZONE */
+.zone img{
+  width:60px;
+  height:60px;
+}
 
 /* SLIDE 3 */
 #slide3{
   background:linear-gradient(#4facfe,#00f2fe);
-  align-items:center;
   justify-content:center;
+  align-items:center;
   flex-direction:column;
   color:white;
   font-size:40px;
 }
 
-/* BUBBLES */
+/* BUBBLES FINAL */
 .bubble{
   position:absolute;
-  width:10px;
-  height:10px;
+  width:10px;height:10px;
   background:white;
   border-radius:50%;
-  animation:float 6s infinite;
+  animation:rise 5s infinite;
 }
-@keyframes float{
+@keyframes rise{
   from{transform:translateY(100px);}
   to{transform:translateY(-100px);}
 }
@@ -159,16 +165,14 @@ body{overflow:hidden;}
 <!-- SLIDE 2 -->
 <div id="slide2" class="slide">
 
-<div id="instruction">
+<div id="title">
 Match the marine animal to the correct ocean zone
 </div>
 
-<div id="container">
+<div class="container">
 
-<!-- LEFT -->
 <div id="left"></div>
 
-<!-- RIGHT -->
 <div id="right">
 
 <img id="ocean" src="assets/ocean_zone.png">
@@ -183,7 +187,7 @@ Match the marine animal to the correct ocean zone
 
 <!-- SLIDE 3 -->
 <div id="slide3" class="slide">
-  <div>🌊 Great Job! 🐠</div>
+  🎉 Great Job! 🐠
 </div>
 
 <script>
@@ -227,7 +231,7 @@ drag(d);
 left.appendChild(d);
 });
 
-/* DRAG + SWIM */
+/* DRAG */
 function drag(el){
 let ox,oy;
 
@@ -256,18 +260,21 @@ document.querySelectorAll(".zone").forEach(z=>{
 let r=z.getBoundingClientRect();
 let e=el.getBoundingClientRect();
 
-if(e.left<r.right&&e.right>r.left&&e.top<r.bottom&&e.bottom>r.top){
+if(e.left<r.right && e.right>r.left && e.top<r.bottom && e.bottom>r.top){
 
 if(z.dataset.zone===el.dataset.zone){
 
 correct.play();
 
-/* SWIM EFFECT */
-el.style.transition="all 0.6s ease";
-z.appendChild(el);
+/* SNAP INSIDE GRID */
 el.style.position="relative";
+el.style.left="";
+el.style.top="";
+el.style.transition="all 0.4s";
 
-checkComplete();
+z.appendChild(el);
+
+checkFinish();
 
 }else{
 wrong.play();
@@ -277,21 +284,23 @@ reset(el);
 });
 }
 
+/* RESET */
 function reset(el){
 el.style.position="relative";
 el.style.left="";
 el.style.top="";
 }
 
-/* COMPLETE */
-function checkComplete(){
+/* FINISH */
+function checkFinish(){
 if(document.querySelectorAll("#left .animal").length===0){
+
 setTimeout(()=>{
 slide2.classList.remove("active");
 slide3.classList.add("active");
 
 /* bubbles */
-for(let i=0;i<20;i++){
+for(let i=0;i<25;i++){
 let b=document.createElement("div");
 b.className="bubble";
 b.style.left=Math.random()*100+"%";
@@ -299,7 +308,7 @@ b.style.top=Math.random()*100+"%";
 slide3.appendChild(b);
 }
 
-},1000);
+},800);
 }
 }
 
