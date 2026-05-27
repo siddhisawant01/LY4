@@ -6,258 +6,283 @@
 <title>Rhyming Words Game</title>
 
 <style>
-    *{
-        margin:0;
-        padding:0;
-        box-sizing:border-box;
-        -webkit-tap-highlight-color: transparent;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial, sans-serif;
+    background:#fff;
+}
+
+body{
+    touch-action:manipulation;
+}
+
+.screen{
+    width:100%;
+    height:100vh;
+    position:absolute;
+    top:0;
+    left:0;
+    display:none;
+}
+
+.active{
+    display:flex;
+}
+
+/* ================= SLIDE 1 ================= */
+
+#slide1{
+    background:white;
+    justify-content:center;
+    align-items:center;
+}
+
+#slide1 img{
+    width:min(60vw,320px);
+    max-width:320px;
+    object-fit:contain;
+}
+
+/* ================= SLIDE 2 ================= */
+
+#slide2{
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding:10px;
+    overflow:hidden;
+    position:relative;
+    background:#fff7fb;
+}
+
+/* Colorful Decorative Background */
+
+.bg-flower{
+    position:absolute;
+    border-radius:50%;
+    opacity:0.35;
+    z-index:0;
+}
+
+.f1{
+    width:120px;
+    height:120px;
+    background:#ff8fab;
+    top:-20px;
+    left:-20px;
+}
+
+.f2{
+    width:100px;
+    height:100px;
+    background:#ffd166;
+    top:0;
+    right:-10px;
+}
+
+.f3{
+    width:110px;
+    height:110px;
+    background:#a0e7e5;
+    bottom:-20px;
+    left:-10px;
+}
+
+.f4{
+    width:120px;
+    height:120px;
+    background:#cdb4db;
+    bottom:-20px;
+    right:-20px;
+}
+
+.f5{
+    width:70px;
+    height:70px;
+    background:#90dbf4;
+    top:45%;
+    left:-15px;
+}
+
+.f6{
+    width:70px;
+    height:70px;
+    background:#ffb4a2;
+    top:45%;
+    right:-15px;
+}
+
+.title{
+    font-size:clamp(22px,4vw,38px);
+    font-weight:900;
+    color:#7b2cbf;
+    margin:8px 0 10px;
+    z-index:5;
+    text-align:center;
+}
+
+.game-wrapper{
+    width:100%;
+    height:100%;
+    position:relative;
+    z-index:5;
+}
+
+.game-area{
+    width:100%;
+    height:100%;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    position:relative;
+}
+
+/* SVG line layer */
+
+#lineSVG{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:1;
+}
+
+/* Columns */
+
+.column{
+    display:flex;
+    flex-direction:column;
+    justify-content:space-evenly;
+    gap:10px;
+    z-index:2;
+}
+
+.card{
+    background:white;
+    border-radius:18px;
+    border:4px solid transparent;
+    box-shadow:0 4px 10px rgba(0,0,0,0.12);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:8px;
+    min-height:100px;
+    cursor:pointer;
+    transition:0.2s;
+    position:relative;
+}
+
+.card img{
+    width:min(17vw,82px);
+    height:min(17vw,82px);
+    object-fit:contain;
+    pointer-events:none;
+}
+
+.label{
+    margin-top:4px;
+    font-size:clamp(16px,2vw,24px);
+    font-weight:bold;
+    color:#333;
+    text-transform:lowercase;
+    pointer-events:none;
+}
+
+.card.selected{
+    border-color:#ff4fa3;
+    transform:scale(1.03);
+    background:#fff0f7;
+}
+
+.card.correct{
+    border-color:#32cd32;
+    background:#ebffeb;
+}
+
+.tick{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:90px;
+    color:#00c853;
+    display:none;
+    z-index:100;
+}
+
+/* ================= SLIDE 3 ================= */
+
+#slide3{
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    background:linear-gradient(135deg,#ffd6e7,#fff5ba,#c8f7ff,#d9c2ff);
+    overflow:hidden;
+}
+
+.goodjob{
+    font-size:clamp(40px,9vw,90px);
+    font-weight:900;
+    color:#ff1493;
+    text-shadow:3px 3px white;
+    z-index:5;
+}
+
+.confetti{
+    position:absolute;
+    width:12px;
+    height:12px;
+    animation:fall linear infinite;
+}
+
+@keyframes fall{
+    from{
+        transform:translateY(-100px) rotate(0deg);
     }
-
-    html,body{
-        width:100%;
-        height:100%;
-        overflow:hidden;
-        font-family: Arial, sans-serif;
-        background:#fff;
+    to{
+        transform:translateY(120vh) rotate(720deg);
     }
+}
 
-    .screen{
-        width:100%;
-        height:100vh;
-        display:none;
-        position:absolute;
-        top:0;
-        left:0;
-    }
+/* ================= MOBILE ================= */
 
-    .active{
-        display:flex;
-    }
-
-    /* ---------------- SLIDE 1 ---------------- */
-
-    #slide1{
-        background:white;
-        justify-content:center;
-        align-items:center;
-    }
-
-    #slide1 img{
-        width:min(60vw,320px);
-        max-width:320px;
-        object-fit:contain;
-    }
-
-    /* ---------------- SLIDE 2 ---------------- */
-
-    #slide2{
-        flex-direction:column;
-        align-items:center;
-        justify-content:flex-start;
-        padding:10px;
-        background:#fef6ff;
-        overflow:hidden;
-        position:relative;
-    }
-
-    /* Floral Background Decorations */
-
-    .flower{
-        position:absolute;
-        border-radius:50%;
-        opacity:0.9;
-        z-index:0;
-    }
-
-    .flower1{
-        width:90px;
-        height:90px;
-        background:#ffb3d9;
-        top:10px;
-        left:10px;
-    }
-
-    .flower2{
-        width:70px;
-        height:70px;
-        background:#ffd166;
-        top:20px;
-        right:20px;
-    }
-
-    .flower3{
-        width:80px;
-        height:80px;
-        background:#a0e7e5;
-        bottom:20px;
-        left:15px;
-    }
-
-    .flower4{
-        width:90px;
-        height:90px;
-        background:#cdb4db;
-        bottom:15px;
-        right:15px;
-    }
-
-    .flower5{
-        width:55px;
-        height:55px;
-        background:#ff8fab;
-        top:45%;
-        left:5px;
-    }
-
-    .flower6{
-        width:55px;
-        height:55px;
-        background:#90dbf4;
-        top:45%;
-        right:5px;
-    }
-
-    .title{
-        font-size:clamp(22px,4vw,36px);
-        font-weight:900;
-        color:#6a0572;
-        margin-top:5px;
-        margin-bottom:10px;
-        z-index:2;
-        text-align:center;
-    }
+@media(max-width:700px){
 
     .game-area{
-        width:100%;
-        max-width:1100px;
-        flex:1;
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:10px;
-        z-index:2;
-        overflow:hidden;
-    }
-
-    .column{
-        display:flex;
-        flex-direction:column;
-        justify-content:space-evenly;
         gap:8px;
     }
 
     .card{
-        background:white;
-        border-radius:18px;
-        border:4px solid transparent;
-        box-shadow:0 4px 10px rgba(0,0,0,0.12);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        flex-direction:column;
-        padding:8px;
-        cursor:pointer;
-        transition:0.2s;
-        min-height:95px;
+        min-height:82px;
+        padding:5px;
     }
 
     .card img{
-        width:min(17vw,80px);
-        height:min(17vw,80px);
-        object-fit:contain;
-        pointer-events:none;
+        width:58px;
+        height:58px;
     }
 
     .label{
-        margin-top:4px;
-        font-size:clamp(16px,2.2vw,24px);
-        font-weight:bold;
-        color:#333;
-        text-transform:lowercase;
-        pointer-events:none;
+        font-size:16px;
     }
 
-    .card.selected{
-        border-color:#ff69b4;
-        transform:scale(1.03);
+    .title{
+        font-size:24px;
     }
+}
 
-    .card.correct{
-        border-color:#32cd32;
-        background:#eaffea;
-    }
-
-    .tick{
-        position:fixed;
-        top:50%;
-        left:50%;
-        transform:translate(-50%,-50%);
-        font-size:90px;
-        color:#00c853;
-        display:none;
-        z-index:100;
-        font-weight:bold;
-    }
-
-    /* ---------------- SLIDE 3 ---------------- */
-
-    #slide3{
-        justify-content:center;
-        align-items:center;
-        flex-direction:column;
-        background:linear-gradient(135deg,#ffd6e7,#fff5ba,#c8f7ff,#d9c2ff);
-        overflow:hidden;
-    }
-
-    .goodjob{
-        font-size:clamp(42px,9vw,90px);
-        font-weight:900;
-        color:#ff1493;
-        text-shadow:3px 3px white;
-        z-index:5;
-    }
-
-    .confetti{
-        position:absolute;
-        width:12px;
-        height:12px;
-        animation:fall linear infinite;
-    }
-
-    @keyframes fall{
-        from{
-            transform:translateY(-100px) rotate(0deg);
-        }
-        to{
-            transform:translateY(120vh) rotate(720deg);
-        }
-    }
-
-    /* ---------------- MOBILE ---------------- */
-
-    @media(max-width:700px){
-
-        .game-area{
-            gap:8px;
-        }
-
-        .card{
-            min-height:82px;
-            padding:5px;
-        }
-
-        .card img{
-            width:58px;
-            height:58px;
-        }
-
-        .label{
-            font-size:16px;
-        }
-
-        .title{
-            font-size:24px;
-        }
-    }
 </style>
 </head>
 
@@ -273,79 +298,86 @@
 
 <div id="slide2" class="screen">
 
-    <div class="flower flower1"></div>
-    <div class="flower flower2"></div>
-    <div class="flower flower3"></div>
-    <div class="flower flower4"></div>
-    <div class="flower flower5"></div>
-    <div class="flower flower6"></div>
+    <div class="bg-flower f1"></div>
+    <div class="bg-flower f2"></div>
+    <div class="bg-flower f3"></div>
+    <div class="bg-flower f4"></div>
+    <div class="bg-flower f5"></div>
+    <div class="bg-flower f6"></div>
 
     <div class="title">Match the rhyming words</div>
 
-    <div class="game-area">
+    <div class="game-wrapper">
 
-        <!-- LEFT COLUMN -->
+        <!-- SVG FOR MATCHING LINES -->
 
-        <div class="column">
+        <svg id="lineSVG"></svg>
 
-            <div class="card" data-word="dog">
-                <img src="assets/dog.png" alt="dog">
-                <div class="label">dog</div>
+        <div class="game-area">
+
+            <!-- LEFT COLUMN -->
+
+            <div class="column">
+
+                <div class="card" id="dog" data-word="dog">
+                    <img src="assets/dog.png" alt="dog">
+                    <div class="label">dog</div>
+                </div>
+
+                <div class="card" id="cap" data-word="cap">
+                    <img src="assets/cap.png" alt="cap">
+                    <div class="label">cap</div>
+                </div>
+
+                <div class="card" id="bat" data-word="bat">
+                    <img src="assets/bat.png" alt="bat">
+                    <div class="label">bat</div>
+                </div>
+
+                <div class="card" id="fan" data-word="fan">
+                    <img src="assets/fan.png" alt="fan">
+                    <div class="label">fan</div>
+                </div>
+
+                <div class="card" id="fox" data-word="fox">
+                    <img src="assets/fox.png" alt="fox">
+                    <div class="label">fox</div>
+                </div>
+
             </div>
 
-            <div class="card" data-word="cap">
-                <img src="assets/cap.png" alt="cap">
-                <div class="label">cap</div>
-            </div>
+            <!-- RIGHT COLUMN -->
 
-            <div class="card" data-word="bat">
-                <img src="assets/bat.png" alt="bat">
-                <div class="label">bat</div>
-            </div>
+            <div class="column">
 
-            <div class="card" data-word="fan">
-                <img src="assets/fan.png" alt="fan">
-                <div class="label">fan</div>
-            </div>
+                <div class="card" id="hat" data-word="hat">
+                    <img src="assets/hat.png" alt="hat">
+                    <div class="label">hat</div>
+                </div>
 
-            <div class="card" data-word="fox">
-                <img src="assets/fox.png" alt="fox">
-                <div class="label">fox</div>
+                <div class="card" id="pan" data-word="pan">
+                    <img src="assets/pan.png" alt="pan">
+                    <div class="label">pan</div>
+                </div>
+
+                <div class="card" id="box" data-word="box">
+                    <img src="assets/box.png" alt="box">
+                    <div class="label">box</div>
+                </div>
+
+                <div class="card" id="log" data-word="log">
+                    <img src="assets/log.png" alt="log">
+                    <div class="label">log</div>
+                </div>
+
+                <div class="card" id="tap" data-word="tap">
+                    <img src="assets/tap.png" alt="tap">
+                    <div class="label">tap</div>
+                </div>
+
             </div>
 
         </div>
-
-        <!-- RIGHT COLUMN -->
-
-        <div class="column">
-
-            <div class="card" data-word="hat">
-                <img src="assets/hat.png" alt="hat">
-                <div class="label">hat</div>
-            </div>
-
-            <div class="card" data-word="pan">
-                <img src="assets/pan.png" alt="pan">
-                <div class="label">pan</div>
-            </div>
-
-            <div class="card" data-word="box">
-                <img src="assets/box.png" alt="box">
-                <div class="label">box</div>
-            </div>
-
-            <div class="card" data-word="log">
-                <img src="assets/log.png" alt="log">
-                <div class="label">log</div>
-            </div>
-
-            <div class="card" data-word="tap">
-                <img src="assets/tap.png" alt="tap">
-                <div class="label">tap</div>
-            </div>
-
-        </div>
-
     </div>
 
     <div class="tick" id="tick">✔</div>
@@ -372,133 +404,170 @@
 
 <script>
 
-    /* ---------- Slide Transition ---------- */
+/* ================= SLIDE CHANGE ================= */
 
-    setTimeout(() => {
-        document.getElementById("slide1").classList.remove("active");
-        document.getElementById("slide2").classList.add("active");
-    }, 3000);
+setTimeout(() => {
+    document.getElementById("slide1").classList.remove("active");
+    document.getElementById("slide2").classList.add("active");
+}, 3000);
 
-    /* ---------- Matching Logic ---------- */
+/* ================= MATCHING LOGIC ================= */
 
-    const pairs = {
-        dog: "log",
-        cap: "tap",
-        bat: "hat",
-        fan: "pan",
-        fox: "box"
-    };
+const pairs = {
+    dog: "log",
+    cap: "tap",
+    bat: "hat",
+    fan: "pan",
+    fox: "box"
+};
 
-    let selectedCard = null;
-    let matchedCount = 0;
+let selectedCard = null;
+let matchedCount = 0;
 
-    const cards = document.querySelectorAll(".card");
-    const tick = document.getElementById("tick");
+const cards = document.querySelectorAll(".card");
+const tick = document.getElementById("tick");
 
-    const correctSound = document.getElementById("correctSound");
-    const wrongSound = document.getElementById("wrongSound");
+const correctSound = document.getElementById("correctSound");
+const wrongSound = document.getElementById("wrongSound");
 
-    cards.forEach(card => {
+cards.forEach(card => {
 
-        card.addEventListener("click", () => {
+    card.addEventListener("click", () => {
 
-            if(card.classList.contains("correct")) return;
+        if(card.classList.contains("correct")) return;
 
-            if(!selectedCard){
+        if(!selectedCard){
 
-                selectedCard = card;
-                card.classList.add("selected");
-                return;
-            }
+            selectedCard = card;
+            card.classList.add("selected");
+            return;
+        }
 
-            if(selectedCard === card){
-                return;
-            }
+        if(selectedCard === card){
+            return;
+        }
 
-            const first = selectedCard.dataset.word;
-            const second = card.dataset.word;
+        const first = selectedCard.dataset.word;
+        const second = card.dataset.word;
 
-            if(pairs[first] === second){
+        if(pairs[first] === second){
 
-                selectedCard.classList.remove("selected");
+            selectedCard.classList.remove("selected");
 
-                selectedCard.classList.add("correct");
-                card.classList.add("correct");
+            selectedCard.classList.add("correct");
+            card.classList.add("correct");
 
-                tick.style.display = "block";
+            drawLine(selectedCard, card);
 
-                correctSound.currentTime = 0;
-                correctSound.play();
+            tick.style.display = "block";
+
+            correctSound.currentTime = 0;
+            correctSound.play();
+
+            setTimeout(() => {
+                tick.style.display = "none";
+            }, 800);
+
+            matchedCount++;
+
+            if(matchedCount === 5){
 
                 setTimeout(() => {
-                    tick.style.display = "none";
-                }, 800);
-
-                matchedCount++;
-
-                if(matchedCount === 5){
-
-                    setTimeout(() => {
-                        showFinalSlide();
-                    }, 1200);
-                }
-
-            } else {
-
-                wrongSound.currentTime = 0;
-                wrongSound.play();
-
-                selectedCard.classList.remove("selected");
+                    showFinalSlide();
+                }, 1500);
             }
 
-            selectedCard = null;
+        } else {
 
-        });
+            wrongSound.currentTime = 0;
+            wrongSound.play();
 
+            selectedCard.classList.remove("selected");
+        }
+
+        selectedCard = null;
     });
 
-    /* ---------- Final Slide ---------- */
+});
 
-    function showFinalSlide(){
+/* ================= DRAW LINE ================= */
 
-        document.getElementById("slide2").classList.remove("active");
-        document.getElementById("slide3").classList.add("active");
+function drawLine(card1, card2){
 
-        createConfetti();
+    const svg = document.getElementById("lineSVG");
+
+    const rect1 = card1.getBoundingClientRect();
+    const rect2 = card2.getBoundingClientRect();
+    const svgRect = svg.getBoundingClientRect();
+
+    const x1 = rect1.right - svgRect.left;
+    const y1 = rect1.top + rect1.height/2 - svgRect.top;
+
+    const x2 = rect2.left - svgRect.left;
+    const y2 = rect2.top + rect2.height/2 - svgRect.top;
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x1);
+    line.setAttribute("y2", y1);
+
+    line.setAttribute("stroke", "#32cd32");
+    line.setAttribute("stroke-width", "8");
+    line.setAttribute("stroke-linecap", "round");
+
+    svg.appendChild(line);
+
+    setTimeout(() => {
+        line.setAttribute("x2", x2);
+        line.setAttribute("y2", y2);
+        line.style.transition = "all 0.4s ease";
+    }, 50);
+}
+
+/* ================= FINAL SLIDE ================= */
+
+function showFinalSlide(){
+
+    document.getElementById("slide2").classList.remove("active");
+    document.getElementById("slide3").classList.add("active");
+
+    createConfetti();
+}
+
+/* ================= CONFETTI ================= */
+
+function createConfetti(){
+
+    const colors = [
+        "#ff1493",
+        "#ffd700",
+        "#00c853",
+        "#00b0ff",
+        "#ff6d00",
+        "#aa00ff"
+    ];
+
+    for(let i=0; i<120; i++){
+
+        const confetti = document.createElement("div");
+
+        confetti.classList.add("confetti");
+
+        confetti.style.left = Math.random() * 100 + "vw";
+
+        confetti.style.background = colors[Math.floor(Math.random()*colors.length)];
+
+        confetti.style.animationDuration = (Math.random()*3 + 2) + "s";
+
+        confetti.style.opacity = Math.random();
+
+        confetti.style.transform = `rotate(${Math.random()*360}deg)`;
+
+        document.getElementById("slide3").appendChild(confetti);
     }
-
-    /* ---------- Confetti ---------- */
-
-    function createConfetti(){
-
-        const colors = [
-            "#ff1493",
-            "#ffd700",
-            "#00c853",
-            "#00b0ff",
-            "#ff6d00",
-            "#aa00ff"
-        ];
-
-        for(let i=0; i<120; i++){
-
-            const confetti = document.createElement("div");
-
-            confetti.classList.add("confetti");
-
-            confetti.style.left = Math.random() * 100 + "vw";
-
-            confetti.style.background = colors[Math.floor(Math.random()*colors.length)];
-
-            confetti.style.animationDuration = (Math.random()*3 + 2) + "s";
-
-            confetti.style.opacity = Math.random();
-
-            confetti.style.transform = `rotate(${Math.random()*360}deg)`;
-
-            document.getElementById("slide3").appendChild(confetti);
-        }
-    }
+}
 
 </script>
 
