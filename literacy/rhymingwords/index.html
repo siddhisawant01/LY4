@@ -92,7 +92,7 @@ html,body{
     width:70px;
     height:70px;
     background:#90dbf4;
-    bottom:8%;
+    bottom:12%;
     right:-10px;
 }
 
@@ -100,28 +100,27 @@ html,body{
     width:70px;
     height:70px;
     background:#ff85a1;
-    bottom:10%;
+    bottom:18%;
     left:-10px;
 }
 
 /* Title */
 
 .title{
-    font-size:clamp(22px,4vw,34px);
+    font-size:clamp(20px,4vw,34px);
     font-weight:900;
     color:#7b2cbf;
-    margin:4px 0 6px;
+    margin:4px 0;
     text-align:center;
     z-index:5;
-    line-height:1.1;
 }
 
 /* ================= GAME AREA ================= */
 
 .game-wrapper{
     width:100%;
+    height:100%;
     max-width:1000px;
-    height:calc(100vh - 65px);
     position:relative;
     flex:1;
 }
@@ -136,6 +135,7 @@ html,body{
     height:100%;
     z-index:20;
     pointer-events:none;
+    overflow:visible;
 }
 
 /* Grid */
@@ -163,9 +163,7 @@ html,body{
 
 .card{
     width:100%;
-    height:16vh;
-    min-height:65px;
-    max-height:100px;
+    min-height:66px;
     background:#ffffffee;
     border-radius:16px;
     border:3px solid transparent;
@@ -177,31 +175,18 @@ html,body{
     cursor:pointer;
     transition:0.2s;
     box-shadow:0 2px 6px rgba(0,0,0,0.12);
-    overflow:hidden;
 }
-
-/* IMAGE SIZE */
 
 .card img{
-    width:62px;
-    height:62px;
+    width:min(11vw,42px);
+    height:min(11vw,42px);
     object-fit:contain;
     pointer-events:none;
-    display:block;
 }
-
-/* SPECIAL FIX FOR FOX + TAP */
-
-.card img.large-image{
-    width:76px;
-    height:76px;
-}
-
-/* Labels */
 
 .label{
-    margin-top:1px;
-    font-size:clamp(13px,2vw,22px);
+    margin-top:2px;
+    font-size:clamp(12px,2vw,20px);
     font-weight:900;
     color:#222;
     text-transform:lowercase;
@@ -271,18 +256,8 @@ html,body{
 
 @media(max-width:700px){
 
-    #slide2{
-        padding:3px;
-    }
-
     .title{
-        font-size:17px;
-        margin-top:2px;
-        margin-bottom:2px;
-    }
-
-    .game-wrapper{
-        height:calc(100vh - 52px);
+        font-size:20px;
     }
 
     .game-grid{
@@ -294,63 +269,21 @@ html,body{
     }
 
     .card{
-        height:14vh;
-        min-height:58px;
+        min-height:60px;
         border-radius:14px;
-        padding:2px;
     }
-
-    /* BIGGER MOBILE IMAGES */
 
     .card img{
-        width:58px;
-        height:58px;
-    }
-
-    /* FOX + TAP FIX */
-
-    .card img.large-image{
-        width:74px;
-        height:74px;
+        width:34px;
+        height:34px;
     }
 
     .label{
-        font-size:8px;
-        margin-top:0px;
+        font-size:11px;
     }
 
     .tick{
         font-size:50px;
-    }
-}
-
-/* EXTRA SMALL PHONES */
-
-@media(max-width:420px){
-
-    .title{
-        font-size:16px;
-    }
-
-    .card{
-        height:13vh;
-        min-height:52px;
-    }
-
-    .card img{
-        width:56px;
-        height:56px;
-    }
-
-    /* FOX + TAP FIX */
-
-    .card img.large-image{
-        width:72px;
-        height:72px;
-    }
-
-    .label{
-        font-size:7px;
     }
 }
 
@@ -410,10 +343,8 @@ html,body{
                     <div class="label">fan</div>
                 </div>
 
-                <!-- FOX FIX -->
-
                 <div class="card" data-word="fox">
-                    <img src="assets/fox.png" class="large-image">
+                    <img src="assets/fox.png">
                     <div class="label">fox</div>
                 </div>
 
@@ -443,10 +374,8 @@ html,body{
                     <div class="label">log</div>
                 </div>
 
-                <!-- TAP FIX -->
-
                 <div class="card" data-word="tap">
-                    <img src="assets/tap.png" class="large-image">
+                    <img src="assets/tap.png">
                     <div class="label">tap</div>
                 </div>
 
@@ -584,11 +513,17 @@ function drawLine(card1, card2){
     const rect1 = card1.getBoundingClientRect();
     const rect2 = card2.getBoundingClientRect();
 
-    const x1 = rect1.right - svgRect.left - 8;
+    /* START POINT */
+
+    const x1 = rect1.left + rect1.width * 0.70 - svgRect.left;
     const y1 = rect1.top + rect1.height/2 - svgRect.top;
 
-    const x2 = rect2.left - svgRect.left + 8;
+    /* END POINT */
+
+    const x2 = rect2.left + rect2.width * 0.30 - svgRect.left;
     const y2 = rect2.top + rect2.height/2 - svgRect.top;
+
+    /* CREATE DIAGONAL LINE */
 
     const line = document.createElementNS(
         "http://www.w3.org/2000/svg",
