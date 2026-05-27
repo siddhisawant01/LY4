@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
-<title>Rhyming Words Game</title>
+<title>Rhyming Words Match Game</title>
 
 <style>
 
@@ -56,19 +57,18 @@ html,body{
 #slide2{
     flex-direction:column;
     align-items:center;
-    justify-content:flex-start;
     overflow:hidden;
     position:relative;
-    padding:4px;
     background:#fdf4fb;
+    padding:4px;
 }
 
-/* Background Circles */
+/* Background Decorations */
 
 .circle{
     position:absolute;
     border-radius:50%;
-    opacity:0.4;
+    opacity:0.35;
     z-index:0;
 }
 
@@ -76,15 +76,15 @@ html,body{
     width:80px;
     height:80px;
     background:#ff8fab;
-    top:-10px;
-    left:-10px;
+    top:-15px;
+    left:-15px;
 }
 
 .c2{
     width:80px;
     height:80px;
     background:#ffd166;
-    top:0;
+    top:-10px;
     right:-10px;
 }
 
@@ -92,7 +92,7 @@ html,body{
     width:70px;
     height:70px;
     background:#90dbf4;
-    bottom:15%;
+    bottom:12%;
     right:-10px;
 }
 
@@ -100,7 +100,7 @@ html,body{
     width:70px;
     height:70px;
     background:#ff85a1;
-    bottom:20%;
+    bottom:18%;
     left:-10px;
 }
 
@@ -110,22 +110,22 @@ html,body{
     font-size:clamp(20px,4vw,34px);
     font-weight:900;
     color:#7b2cbf;
-    margin-top:4px;
-    margin-bottom:4px;
-    z-index:5;
+    margin:4px 0;
     text-align:center;
+    z-index:5;
 }
 
 /* ================= GAME AREA ================= */
 
-.game-container{
-    position:relative;
+.game-wrapper{
     width:100%;
-    flex:1;
+    height:100%;
     max-width:1000px;
+    position:relative;
+    flex:1;
 }
 
-/* SVG LINES */
+/* SVG FOR LINES */
 
 #lineSVG{
     position:absolute;
@@ -133,14 +133,14 @@ html,body{
     left:0;
     width:100%;
     height:100%;
-    z-index:10;
+    z-index:20;
     pointer-events:none;
     overflow:visible;
 }
 
 /* Grid */
 
-.game-area{
+.game-grid{
     width:100%;
     height:100%;
     display:grid;
@@ -163,6 +163,7 @@ html,body{
 
 .card{
     width:100%;
+    min-height:66px;
     background:#ffffffee;
     border-radius:16px;
     border:3px solid transparent;
@@ -170,12 +171,10 @@ html,body{
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    padding:3px;
     position:relative;
     cursor:pointer;
-    box-shadow:0 2px 6px rgba(0,0,0,0.12);
-    min-height:66px;
     transition:0.2s;
+    box-shadow:0 2px 6px rgba(0,0,0,0.12);
 }
 
 .card img{
@@ -235,6 +234,8 @@ html,body{
     z-index:5;
 }
 
+/* Confetti */
+
 .confetti{
     position:absolute;
     width:10px;
@@ -259,7 +260,7 @@ html,body{
         font-size:20px;
     }
 
-    .game-area{
+    .game-grid{
         gap:4px;
     }
 
@@ -273,8 +274,8 @@ html,body{
     }
 
     .card img{
-        width:36px;
-        height:36px;
+        width:34px;
+        height:34px;
     }
 
     .label{
@@ -310,13 +311,13 @@ html,body{
 
     <div class="title">Match the rhyming words</div>
 
-    <div class="game-container">
+    <div class="game-wrapper">
 
-        <!-- SVG LINES -->
+        <!-- SVG FOR LINES -->
 
         <svg id="lineSVG"></svg>
 
-        <div class="game-area">
+        <div class="game-grid">
 
             <!-- LEFT COLUMN -->
 
@@ -415,6 +416,7 @@ html,body{
 setTimeout(() => {
 
     document.getElementById("slide1").classList.remove("active");
+
     document.getElementById("slide2").classList.add("active");
 
 },3000);
@@ -475,9 +477,7 @@ cards.forEach(card => {
             correctSound.play();
 
             setTimeout(() => {
-
                 tick.style.display = "none";
-
             },700);
 
             matchedCount++;
@@ -485,9 +485,7 @@ cards.forEach(card => {
             if(matchedCount === 5){
 
                 setTimeout(() => {
-
                     showFinalSlide();
-
                 },1500);
             }
 
@@ -500,7 +498,6 @@ cards.forEach(card => {
         }
 
         selectedCard = null;
-
     });
 
 });
@@ -516,17 +513,22 @@ function drawLine(card1, card2){
     const rect1 = card1.getBoundingClientRect();
     const rect2 = card2.getBoundingClientRect();
 
-    /* RIGHT CENTER OF LEFT CARD */
-    const x1 = rect1.right - svgRect.left;
+    /* START POINT */
+
+    const x1 = rect1.left + rect1.width * 0.70 - svgRect.left;
     const y1 = rect1.top + rect1.height/2 - svgRect.top;
 
-    /* LEFT CENTER OF RIGHT CARD */
-    const x2 = rect2.left - svgRect.left;
+    /* END POINT */
+
+    const x2 = rect2.left + rect2.width * 0.30 - svgRect.left;
     const y2 = rect2.top + rect2.height/2 - svgRect.top;
 
-    /* CREATE LINE */
+    /* CREATE DIAGONAL LINE */
 
-    const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+    const line = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "line"
+    );
 
     line.setAttribute("x1", x1);
     line.setAttribute("y1", y1);
@@ -534,8 +536,8 @@ function drawLine(card1, card2){
     line.setAttribute("x2", x2);
     line.setAttribute("y2", y2);
 
-    line.setAttribute("stroke", "#00c853");
-    line.setAttribute("stroke-width", "6");
+    line.setAttribute("stroke", "#ff0000");
+    line.setAttribute("stroke-width", "5");
     line.setAttribute("stroke-linecap", "round");
 
     svg.appendChild(line);
