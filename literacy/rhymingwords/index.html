@@ -92,7 +92,7 @@ html,body{
     width:70px;
     height:70px;
     background:#90dbf4;
-    bottom:12%;
+    bottom:8%;
     right:-10px;
 }
 
@@ -100,27 +100,28 @@ html,body{
     width:70px;
     height:70px;
     background:#ff85a1;
-    bottom:18%;
+    bottom:10%;
     left:-10px;
 }
 
 /* Title */
 
 .title{
-    font-size:clamp(20px,4vw,34px);
+    font-size:clamp(22px,4vw,34px);
     font-weight:900;
     color:#7b2cbf;
-    margin:4px 0;
+    margin:4px 0 6px;
     text-align:center;
     z-index:5;
+    line-height:1.1;
 }
 
 /* ================= GAME AREA ================= */
 
 .game-wrapper{
     width:100%;
-    height:100%;
     max-width:1000px;
+    height:calc(100vh - 70px);
     position:relative;
     flex:1;
 }
@@ -135,7 +136,6 @@ html,body{
     height:100%;
     z-index:20;
     pointer-events:none;
-    overflow:visible;
 }
 
 /* Grid */
@@ -163,7 +163,9 @@ html,body{
 
 .card{
     width:100%;
-    min-height:66px;
+    height:17vh;
+    min-height:72px;
+    max-height:110px;
     background:#ffffffee;
     border-radius:16px;
     border:3px solid transparent;
@@ -178,15 +180,15 @@ html,body{
 }
 
 .card img{
-    width:min(11vw,42px);
-    height:min(11vw,42px);
+    width:52px;
+    height:52px;
     object-fit:contain;
     pointer-events:none;
 }
 
 .label{
     margin-top:2px;
-    font-size:clamp(12px,2vw,20px);
+    font-size:clamp(13px,2vw,22px);
     font-weight:900;
     color:#222;
     text-transform:lowercase;
@@ -256,8 +258,18 @@ html,body{
 
 @media(max-width:700px){
 
+    #slide2{
+        padding:3px;
+    }
+
     .title{
-        font-size:20px;
+        font-size:18px;
+        margin-top:2px;
+        margin-bottom:4px;
+    }
+
+    .game-wrapper{
+        height:calc(100vh - 58px);
     }
 
     .game-grid{
@@ -269,21 +281,53 @@ html,body{
     }
 
     .card{
-        min-height:60px;
+        height:15.5vh;
+        min-height:58px;
+        max-height:none;
         border-radius:14px;
+        padding:2px;
     }
 
+    /* BIGGER IMAGES FOR MOBILE */
+
     .card img{
-        width:34px;
-        height:34px;
+        width:48px;
+        height:48px;
     }
 
     .label{
-        font-size:11px;
+        font-size:10px;
+        margin-top:1px;
     }
 
     .tick{
         font-size:50px;
+    }
+
+}
+
+/* EXTRA SMALL PHONES */
+
+@media(max-width:420px){
+
+    .title{
+        font-size:17px;
+    }
+
+    .card{
+        height:14.5vh;
+        min-height:54px;
+    }
+
+    /* BIGGER IMAGES */
+
+    .card img{
+        width:46px;
+        height:46px;
+    }
+
+    .label{
+        font-size:9px;
     }
 }
 
@@ -513,17 +557,11 @@ function drawLine(card1, card2){
     const rect1 = card1.getBoundingClientRect();
     const rect2 = card2.getBoundingClientRect();
 
-    /* START POINT */
-
-    const x1 = rect1.left + rect1.width * 0.70 - svgRect.left;
+    const x1 = rect1.right - svgRect.left - 8;
     const y1 = rect1.top + rect1.height/2 - svgRect.top;
 
-    /* END POINT */
-
-    const x2 = rect2.left + rect2.width * 0.30 - svgRect.left;
+    const x2 = rect2.left - svgRect.left + 8;
     const y2 = rect2.top + rect2.height/2 - svgRect.top;
-
-    /* CREATE DIAGONAL LINE */
 
     const line = document.createElementNS(
         "http://www.w3.org/2000/svg",
