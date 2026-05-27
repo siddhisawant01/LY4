@@ -20,7 +20,7 @@ html,body{
     width:100%;
     height:100%;
     overflow:hidden;
-    font-family:Arial,sans-serif;
+    font-family:Arial, sans-serif;
     background:#fff;
 }
 
@@ -63,7 +63,7 @@ html,body{
     padding:4px;
 }
 
-/* Decorative circles */
+/* Background Decorations */
 
 .circle{
     position:absolute;
@@ -92,7 +92,7 @@ html,body{
     width:70px;
     height:70px;
     background:#90dbf4;
-    bottom:6%;
+    bottom:8%;
     right:-10px;
 }
 
@@ -100,19 +100,20 @@ html,body{
     width:70px;
     height:70px;
     background:#ff85a1;
-    bottom:8%;
+    bottom:10%;
     left:-10px;
 }
 
 /* Title */
 
 .title{
-    font-size:clamp(20px,4vw,34px);
+    font-size:clamp(22px,4vw,34px);
     font-weight:900;
     color:#7b2cbf;
-    margin:4px 0;
+    margin:4px 0 6px;
     text-align:center;
     z-index:5;
+    line-height:1.1;
 }
 
 /* ================= GAME AREA ================= */
@@ -120,19 +121,19 @@ html,body{
 .game-wrapper{
     width:100%;
     max-width:1000px;
-    height:calc(100vh - 60px);
+    height:calc(100vh - 70px);
     position:relative;
     flex:1;
 }
 
-/* SVG Lines */
+/* SVG FOR LINES */
 
 #lineSVG{
     position:absolute;
-    width:100%;
-    height:100%;
     top:0;
     left:0;
+    width:100%;
+    height:100%;
     z-index:20;
     pointer-events:none;
 }
@@ -144,7 +145,7 @@ html,body{
     height:100%;
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:4px;
+    gap:6px;
     position:relative;
     z-index:2;
 }
@@ -155,18 +156,18 @@ html,body{
     display:flex;
     flex-direction:column;
     justify-content:space-evenly;
-    gap:3px;
+    gap:4px;
 }
 
 /* Cards */
 
 .card{
     width:100%;
-    height:15.5vh;
-    min-height:60px;
-    max-height:92px;
+    height:17vh;
+    min-height:72px;
+    max-height:110px;
     background:#ffffffee;
-    border-radius:14px;
+    border-radius:16px;
     border:3px solid transparent;
     display:flex;
     flex-direction:column;
@@ -179,15 +180,15 @@ html,body{
 }
 
 .card img{
-    width:56px;
-    height:56px;
+    width:52px;
+    height:52px;
     object-fit:contain;
     pointer-events:none;
 }
 
 .label{
-    margin-top:1px;
-    font-size:clamp(12px,2vw,20px);
+    margin-top:2px;
+    font-size:clamp(13px,2vw,22px);
     font-weight:900;
     color:#222;
     text-transform:lowercase;
@@ -258,51 +259,51 @@ html,body{
 @media(max-width:700px){
 
     #slide2{
-        padding:2px;
+        padding:3px;
     }
 
     .title{
-        font-size:16px;
+        font-size:18px;
         margin-top:2px;
-        margin-bottom:2px;
+        margin-bottom:4px;
     }
 
     .game-wrapper{
-        height:calc(100vh - 48px);
+        height:calc(100vh - 58px);
     }
 
     .game-grid{
-        gap:3px;
+        gap:4px;
     }
 
     .column{
-        gap:2px;
+        gap:3px;
     }
-
-    /* SMALLER BOXES */
 
     .card{
-        height:14vh;
-        min-height:50px;
-        border-radius:12px;
-        padding:1px;
+        height:15.5vh;
+        min-height:58px;
+        max-height:none;
+        border-radius:14px;
+        padding:2px;
     }
 
-    /* BIGGER IMAGES */
+    /* BIGGER IMAGES FOR MOBILE */
 
     .card img{
-        width:54px;
-        height:54px;
+        width:48px;
+        height:48px;
     }
 
     .label{
-        font-size:8px;
-        margin-top:0;
+        font-size:10px;
+        margin-top:1px;
     }
 
     .tick{
-        font-size:48px;
+        font-size:50px;
     }
+
 }
 
 /* EXTRA SMALL PHONES */
@@ -310,25 +311,23 @@ html,body{
 @media(max-width:420px){
 
     .title{
-        font-size:15px;
+        font-size:17px;
     }
-
-    /* FIT ALL 5 ROWS */
 
     .card{
-        height:13vh;
-        min-height:46px;
+        height:14.5vh;
+        min-height:54px;
     }
 
-    /* BIG IMAGES */
+    /* BIGGER IMAGES */
 
     .card img{
-        width:52px;
-        height:52px;
+        width:46px;
+        height:46px;
     }
 
     .label{
-        font-size:7px;
+        font-size:9px;
     }
 }
 
@@ -357,6 +356,8 @@ html,body{
     <div class="title">Match the rhyming words</div>
 
     <div class="game-wrapper">
+
+        <!-- SVG FOR LINES -->
 
         <svg id="lineSVG"></svg>
 
