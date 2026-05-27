@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>Rhyming Words Game</title>
 
 <style>
@@ -58,25 +59,25 @@ html,body{
     justify-content:flex-start;
     overflow:hidden;
     position:relative;
-    padding:6px;
+    padding:4px;
     background:#fdf4fb;
 }
 
-/* Decorative Background */
+/* Background Circles */
 
 .circle{
     position:absolute;
     border-radius:50%;
-    opacity:0.45;
+    opacity:0.4;
     z-index:0;
 }
 
 .c1{
-    width:90px;
-    height:90px;
+    width:80px;
+    height:80px;
     background:#ff8fab;
-    top:-15px;
-    left:-15px;
+    top:-10px;
+    left:-10px;
 }
 
 .c2{
@@ -92,7 +93,7 @@ html,body{
     height:70px;
     background:#90dbf4;
     bottom:15%;
-    right:-15px;
+    right:-10px;
 }
 
 .c4{
@@ -103,12 +104,14 @@ html,body{
     left:-10px;
 }
 
+/* Title */
+
 .title{
-    font-size:clamp(18px,4vw,34px);
+    font-size:clamp(20px,4vw,34px);
     font-weight:900;
     color:#7b2cbf;
     margin-top:4px;
-    margin-bottom:6px;
+    margin-bottom:4px;
     z-index:5;
     text-align:center;
 }
@@ -122,16 +125,6 @@ html,body{
     max-width:1000px;
 }
 
-.game-area{
-    width:100%;
-    height:100%;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    position:relative;
-    z-index:2;
-}
-
 /* SVG LINES */
 
 #lineSVG{
@@ -140,8 +133,21 @@ html,body{
     left:0;
     width:100%;
     height:100%;
-    z-index:1;
+    z-index:10;
     pointer-events:none;
+    overflow:visible;
+}
+
+/* Grid */
+
+.game-area{
+    width:100%;
+    height:100%;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+    position:relative;
+    z-index:2;
 }
 
 /* Columns */
@@ -150,7 +156,7 @@ html,body{
     display:flex;
     flex-direction:column;
     justify-content:space-evenly;
-    gap:6px;
+    gap:4px;
 }
 
 /* Cards */
@@ -158,30 +164,30 @@ html,body{
 .card{
     width:100%;
     background:#ffffffee;
-    border-radius:18px;
+    border-radius:16px;
     border:3px solid transparent;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    padding:4px;
-    cursor:pointer;
+    padding:3px;
     position:relative;
-    box-shadow:0 3px 8px rgba(0,0,0,0.12);
+    cursor:pointer;
+    box-shadow:0 2px 6px rgba(0,0,0,0.12);
+    min-height:66px;
     transition:0.2s;
-    min-height:88px;
 }
 
 .card img{
-    width:min(13vw,54px);
-    height:min(13vw,54px);
+    width:min(11vw,42px);
+    height:min(11vw,42px);
     object-fit:contain;
     pointer-events:none;
 }
 
 .label{
     margin-top:2px;
-    font-size:clamp(13px,2vw,22px);
+    font-size:clamp(12px,2vw,20px);
     font-weight:900;
     color:#222;
     text-transform:lowercase;
@@ -194,7 +200,7 @@ html,body{
 }
 
 .card.correct{
-    border-color:#32cd32;
+    border-color:#00c853;
     background:#eaffea;
 }
 
@@ -205,7 +211,7 @@ html,body{
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    font-size:70px;
+    font-size:60px;
     color:#00c853;
     display:none;
     z-index:100;
@@ -222,7 +228,7 @@ html,body{
 }
 
 .goodjob{
-    font-size:clamp(38px,10vw,90px);
+    font-size:clamp(40px,10vw,90px);
     font-weight:900;
     color:#ff1493;
     text-shadow:2px 2px white;
@@ -245,72 +251,38 @@ html,body{
     }
 }
 
-/* ================= MOBILE DEVICES ================= */
+/* ================= MOBILE ================= */
 
-@media(max-width:900px){
+@media(max-width:700px){
 
     .title{
-        font-size:26px;
+        font-size:20px;
     }
 
     .game-area{
-        gap:6px;
-    }
-
-    .column{
-        gap:5px;
-    }
-
-    .card{
-        min-height:74px;
-        border-radius:16px;
-    }
-
-    .card img{
-        width:48px;
-        height:48px;
-    }
-
-    .label{
-        font-size:14px;
-    }
-}
-
-@media(max-width:600px){
-
-    #slide2{
-        padding:4px;
-    }
-
-    .title{
-        font-size:22px;
-        margin-bottom:4px;
-    }
-
-    .game-area{
-        gap:5px;
-    }
-
-    .column{
         gap:4px;
     }
 
+    .column{
+        gap:3px;
+    }
+
     .card{
-        min-height:66px;
-        padding:3px;
+        min-height:60px;
+        border-radius:14px;
     }
 
     .card img{
-        width:40px;
-        height:40px;
+        width:36px;
+        height:36px;
     }
 
     .label{
-        font-size:12px;
+        font-size:11px;
     }
 
     .tick{
-        font-size:55px;
+        font-size:50px;
     }
 }
 
@@ -322,7 +294,9 @@ html,body{
 <!-- ================= SLIDE 1 ================= -->
 
 <div id="slide1" class="screen active">
+
     <img src="assets/innovine-logo.png" alt="Innovine Logo">
+
 </div>
 
 <!-- ================= SLIDE 2 ================= -->
@@ -338,7 +312,7 @@ html,body{
 
     <div class="game-container">
 
-        <!-- SVG FOR LINES -->
+        <!-- SVG LINES -->
 
         <svg id="lineSVG"></svg>
 
@@ -417,7 +391,9 @@ html,body{
 <!-- ================= SLIDE 3 ================= -->
 
 <div id="slide3" class="screen">
+
     <div class="goodjob">Good Job!</div>
+
 </div>
 
 <!-- ================= AUDIO ================= -->
@@ -434,14 +410,14 @@ html,body{
 
 <script>
 
-/* ================= SLIDE TRANSITION ================= */
+/* ================= SLIDE CHANGE ================= */
 
 setTimeout(() => {
 
     document.getElementById("slide1").classList.remove("active");
     document.getElementById("slide2").classList.add("active");
 
-}, 3000);
+},3000);
 
 /* ================= MATCHING ================= */
 
@@ -499,19 +475,23 @@ cards.forEach(card => {
             correctSound.play();
 
             setTimeout(() => {
+
                 tick.style.display = "none";
-            }, 700);
+
+            },700);
 
             matchedCount++;
 
             if(matchedCount === 5){
 
                 setTimeout(() => {
+
                     showFinalSlide();
-                }, 1400);
+
+                },1500);
             }
 
-        } else {
+        }else{
 
             selectedCard.classList.remove("selected");
 
@@ -520,6 +500,7 @@ cards.forEach(card => {
         }
 
         selectedCard = null;
+
     });
 
 });
@@ -530,27 +511,31 @@ function drawLine(card1, card2){
 
     const svg = document.getElementById("lineSVG");
 
-    const rect1 = card1.getBoundingClientRect();
-    const rect2 = card2.getBoundingClientRect();
     const svgRect = svg.getBoundingClientRect();
 
-    /* Start point = right center of left card */
-    const x1 = rect1.right - svgRect.left - 8;
+    const rect1 = card1.getBoundingClientRect();
+    const rect2 = card2.getBoundingClientRect();
+
+    /* RIGHT CENTER OF LEFT CARD */
+    const x1 = rect1.right - svgRect.left;
     const y1 = rect1.top + rect1.height/2 - svgRect.top;
 
-    /* End point = left center of right card */
-    const x2 = rect2.left - svgRect.left + 8;
+    /* LEFT CENTER OF RIGHT CARD */
+    const x2 = rect2.left - svgRect.left;
     const y2 = rect2.top + rect2.height/2 - svgRect.top;
+
+    /* CREATE LINE */
 
     const line = document.createElementNS("http://www.w3.org/2000/svg","line");
 
     line.setAttribute("x1", x1);
     line.setAttribute("y1", y1);
+
     line.setAttribute("x2", x2);
     line.setAttribute("y2", y2);
 
     line.setAttribute("stroke", "#00c853");
-    line.setAttribute("stroke-width", "5");
+    line.setAttribute("stroke-width", "6");
     line.setAttribute("stroke-linecap", "round");
 
     svg.appendChild(line);
@@ -561,6 +546,7 @@ function drawLine(card1, card2){
 function showFinalSlide(){
 
     document.getElementById("slide2").classList.remove("active");
+
     document.getElementById("slide3").classList.add("active");
 
     createConfetti();
@@ -587,9 +573,11 @@ function createConfetti(){
 
         confetti.style.left = Math.random()*100 + "vw";
 
-        confetti.style.background = colors[Math.floor(Math.random()*colors.length)];
+        confetti.style.background =
+        colors[Math.floor(Math.random()*colors.length)];
 
-        confetti.style.animationDuration = (Math.random()*3 + 2) + "s";
+        confetti.style.animationDuration =
+        (Math.random()*3 + 2) + "s";
 
         confetti.style.opacity = Math.random();
 
