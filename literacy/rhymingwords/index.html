@@ -121,7 +121,7 @@ html,body{
 .game-wrapper{
     width:100%;
     max-width:1000px;
-    height:calc(100vh - 70px);
+    height:calc(100vh - 65px);
     position:relative;
     flex:1;
 }
@@ -163,9 +163,9 @@ html,body{
 
 .card{
     width:100%;
-    height:17vh;
-    min-height:72px;
-    max-height:110px;
+    height:16vh;
+    min-height:65px;
+    max-height:100px;
     background:#ffffffee;
     border-radius:16px;
     border:3px solid transparent;
@@ -177,17 +177,30 @@ html,body{
     cursor:pointer;
     transition:0.2s;
     box-shadow:0 2px 6px rgba(0,0,0,0.12);
+    overflow:hidden;
 }
+
+/* IMAGE SIZE */
 
 .card img{
-    width:52px;
-    height:52px;
+    width:62px;
+    height:62px;
     object-fit:contain;
     pointer-events:none;
+    display:block;
 }
 
+/* SPECIAL FIX FOR FOX + TAP */
+
+.card img.large-image{
+    width:76px;
+    height:76px;
+}
+
+/* Labels */
+
 .label{
-    margin-top:2px;
+    margin-top:1px;
     font-size:clamp(13px,2vw,22px);
     font-weight:900;
     color:#222;
@@ -263,13 +276,13 @@ html,body{
     }
 
     .title{
-        font-size:18px;
+        font-size:17px;
         margin-top:2px;
-        margin-bottom:4px;
+        margin-bottom:2px;
     }
 
     .game-wrapper{
-        height:calc(100vh - 58px);
+        height:calc(100vh - 52px);
     }
 
     .game-grid{
@@ -281,29 +294,34 @@ html,body{
     }
 
     .card{
-        height:15.5vh;
+        height:14vh;
         min-height:58px;
-        max-height:none;
         border-radius:14px;
         padding:2px;
     }
 
-    /* BIGGER IMAGES FOR MOBILE */
+    /* BIGGER MOBILE IMAGES */
 
     .card img{
-        width:48px;
-        height:48px;
+        width:58px;
+        height:58px;
+    }
+
+    /* FOX + TAP FIX */
+
+    .card img.large-image{
+        width:74px;
+        height:74px;
     }
 
     .label{
-        font-size:10px;
-        margin-top:1px;
+        font-size:8px;
+        margin-top:0px;
     }
 
     .tick{
         font-size:50px;
     }
-
 }
 
 /* EXTRA SMALL PHONES */
@@ -311,23 +329,28 @@ html,body{
 @media(max-width:420px){
 
     .title{
-        font-size:17px;
+        font-size:16px;
     }
 
     .card{
-        height:14.5vh;
-        min-height:54px;
+        height:13vh;
+        min-height:52px;
     }
 
-    /* BIGGER IMAGES */
-
     .card img{
-        width:46px;
-        height:46px;
+        width:56px;
+        height:56px;
+    }
+
+    /* FOX + TAP FIX */
+
+    .card img.large-image{
+        width:72px;
+        height:72px;
     }
 
     .label{
-        font-size:9px;
+        font-size:7px;
     }
 }
 
@@ -387,8 +410,10 @@ html,body{
                     <div class="label">fan</div>
                 </div>
 
+                <!-- FOX FIX -->
+
                 <div class="card" data-word="fox">
-                    <img src="assets/fox.png">
+                    <img src="assets/fox.png" class="large-image">
                     <div class="label">fox</div>
                 </div>
 
@@ -418,8 +443,10 @@ html,body{
                     <div class="label">log</div>
                 </div>
 
+                <!-- TAP FIX -->
+
                 <div class="card" data-word="tap">
-                    <img src="assets/tap.png">
+                    <img src="assets/tap.png" class="large-image">
                     <div class="label">tap</div>
                 </div>
 
