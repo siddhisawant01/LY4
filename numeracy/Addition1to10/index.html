@@ -2,141 +2,137 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Addition Game</title>
+<title>Addition Game 1 to 10</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+html,body{
+margin:0;
+padding:0;
+overflow:hidden;
+font-family: Arial, sans-serif;
+}
+
 body{
-  margin:0;
-  font-family: Arial, sans-serif;
-  overflow:hidden;
+height:100vh;
+width:100vw;
+background: url("data:image/png;base64,REPLACE_BG") center/cover no-repeat;
 }
 
-/* COMMON SLIDE */
-.slide{
-  display:none;
-  width:100vw;
-  height:100vh;
-  position:absolute;
-  top:0;
-  left:0;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  text-align:center;
+/* SPLASH */
+#splash{
+position:absolute;
+width:100%;
+height:100%;
+background:white;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:10;
 }
 
-/* SHOW ACTIVE */
-.active{
-  display:flex;
+#splash img{
+width:200px;
 }
 
-/* BACKGROUND FOR SLIDES 2–8 */
-.bg{
-  background-image:url("assets/bg.png"); /* replace if needed */
-  background-size:cover;
+/* GAME WRAPPER */
+.screen{
+display:none;
+height:100vh;
+width:100vw;
+flex-direction:column;
+align-items:center;
+justify-content:flex-start;
+text-align:center;
+padding:10px;
+box-sizing:border-box;
 }
 
-/* TITLE */
+/* HEADER */
 .title{
-  font-size:42px;
-  color:#ffcc00;
-  font-weight:bold;
-  text-shadow:2px 2px 0 #000;
-  margin-top:10px;
+font-size:38px;
+color:#ffcc00;
+font-weight:bold;
+text-shadow:2px 2px 0 #333;
+margin-top:10px;
 }
 
-/* EQUATION AREA */
-.equation{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  margin-top:20px;
+/* QUESTION ROW */
+.row{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+margin-top:10px;
+flex-wrap:wrap;
 }
 
-/* IMAGE BOX */
 .box{
-  width:90px;
-  height:90px;
-  border:4px solid #ff66cc;
-  border-radius:12px;
-  background:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+width:80px;
+height:80px;
+border:3px solid #fff;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:white;
+font-size:28px;
+font-weight:bold;
 }
 
-/* EMPTY ANSWER BOX */
-.answerBox{
-  width:90px;
-  height:90px;
-  border:4px dashed #333;
-  border-radius:12px;
-  background:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:28px;
-  font-weight:bold;
+.imgBox{
+width:80px;
+height:80px;
+border:3px solid #fff;
+border-radius:12px;
+background:white;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.imgBox img{
+width:70px;
+height:70px;
 }
 
 /* OPTIONS */
 .options{
-  display:flex;
-  gap:15px;
-  margin-top:25px;
+display:flex;
+justify-content:center;
+gap:15px;
+margin-top:20px;
+flex-wrap:wrap;
 }
 
 .option{
-  width:70px;
-  height:70px;
-  background:white;
-  border:4px solid #4CAF50;
-  border-radius:10px;
-  font-size:28px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.option:active{
-  transform:scale(0.95);
+width:70px;
+height:70px;
+border:3px solid #333;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+font-weight:bold;
+background:#fff;
+cursor:pointer;
 }
 
 /* FEEDBACK */
-.tick{
-  font-size:80px;
-  color:green;
-  display:none;
+#feedback{
+font-size:40px;
+position:absolute;
+top:40%;
+display:none;
 }
 
-.cross{
-  font-size:80px;
-  color:red;
-  display:none;
-}
-
-/* GOOD JOB SCREEN */
-#goodjob{
-  background:white;
-  font-size:50px;
-  font-weight:bold;
-  color:green;
-}
-
-/* falling numbers */
-.fall{
-  position:absolute;
-  top:-50px;
-  font-size:30px;
-  animation:fall 3s linear infinite;
-}
-
-@keyframes fall{
-  to{transform:translateY(110vh);}
+#end{
+display:none;
+font-size:40px;
+color:green;
+font-weight:bold;
+text-align:center;
 }
 
 </style>
@@ -144,227 +140,127 @@ body{
 
 <body>
 
-<!-- SLIDE 1 -->
-<div class="slide active" id="s1" style="background:white;">
-  <img src="assets/innovine-logo.png" style="width:200px;">
+<!-- SPLASH -->
+<div id="splash">
+  <img src="assets/innovine-logo.png">
 </div>
 
-<!-- SLIDE 2 -->
-<div class="slide bg" id="s2">
-  <div class="title">ADDITION</div>
+<!-- GAME SCREENS -->
+<div id="game" class="screen"></div>
 
-  <div class="equation">
-    <div class="box"><img src="assets/6carrots.png" width="70"></div>
-    <div style="font-size:40px;">+</div>
-    <div class="box"><img src="assets/4carrots.png" width="70"></div>
-    <div style="font-size:40px;">=</div>
-    <div class="answerBox" id="a2"></div>
-  </div>
+<!-- END -->
+<div id="end">🎉 Good Job! 🎉</div>
 
-  <div class="options">
-    <div class="option" onclick="check(this,10,'a2',2)">10</div>
-    <div class="option" onclick="wrong(this)">6</div>
-    <div class="option" onclick="wrong(this)">5</div>
-  </div>
-
-  <div class="tick">✔</div>
-  <div class="cross">✖</div>
-</div>
-
-<!-- SLIDE 3 -->
-<div class="slide bg" id="s3">
-  <div class="title">ADDITION</div>
-
-  <div class="equation">
-    <div class="box"><img src="assets/2crayons.png" width="70"></div>
-    <div style="font-size:40px;">+</div>
-    <div class="box"><img src="assets/4crayons.png" width="70"></div>
-    <div style="font-size:40px;">=</div>
-    <div class="answerBox" id="a3"></div>
-  </div>
-
-  <div class="options">
-    <div class="option" onclick="wrong(this)">8</div>
-    <div class="option" onclick="check(this,6,'a3',3)">6</div>
-    <div class="option" onclick="wrong(this)">5</div>
-  </div>
-
-  <div class="tick">✔</div>
-  <div class="cross">✖</div>
-</div>
-
-<!-- SLIDE 4 -->
-<div class="slide bg" id="s4">
-  <div class="title">ADDITION</div>
-
-  <div class="equation">
-    <div class="box"><img src="assets/6pineapples.png" width="70"></div>
-    <div style="font-size:40px;">+</div>
-    <div class="box"><img src="assets/3pineapples.png" width="70"></div>
-    <div style="font-size:40px;">=</div>
-    <div class="answerBox" id="a4"></div>
-  </div>
-
-  <div class="options">
-    <div class="option" onclick="wrong(this)">10</div>
-    <div class="option" onclick="check(this,9,'a4',4)">9</div>
-    <div class="option" onclick="wrong(this)">5</div>
-  </div>
-
-  <div class="tick">✔</div>
-  <div class="cross">✖</div>
-</div>
-
-<!-- SLIDE 5 -->
-<div class="slide bg" id="s5">
-  <div class="title">ADDITION</div>
-
-  <div class="equation">
-    <div class="box"><img src="assets/2star.png" width="70"></div>
-    <div style="font-size:40px;">+</div>
-    <div class="box"><img src="assets/1star.png" width="70"></div>
-    <div style="font-size:40px;">=</div>
-    <div class="answerBox" id="a5"></div>
-  </div>
-
-  <div class="options">
-    <div class="option" onclick="wrong(this)">6</div>
-    <div class="option" onclick="wrong(this)">4</div>
-    <div class="option" onclick="check(this,3,'a5',5)">3</div>
-  </div>
-
-  <div class="tick">✔</div>
-  <div class="cross">✖</div>
-</div>
-
-<!-- SLIDE 6 -->
-<div class="slide bg" id="s6">
-  <div class="title">ADDITION</div>
-
-  <div class="equation">
-    <div class="box"><img src="assets/3balloons.png" width="70"></div>
-    <div style="font-size:40px;">+</div>
-    <div class="box"><img src="assets/2balloons.png" width="70"></div>
-    <div style="font-size:40px;">=</div>
-    <div class="answerBox" id="a6"></div>
-  </div>
-
-  <div class="options">
-    <div class="option" onclick="wrong(this)">9</div>
-    <div class="option" onclick="wrong(this)">7</div>
-    <div class="option" onclick="check(this,5,'a6',6)">5</div>
-  </div>
-
-  <div class="tick">✔</div>
-  <div class="cross">✖</div>
-</div>
-
-<!-- SLIDE 7 -->
-<div class="slide bg" id="s7">
-  <div class="title">ADDITION</div>
-
-  <div class="equation">
-    <div class="box"><img src="assets/4birds.png" width="70"></div>
-    <div style="font-size:40px;">+</div>
-    <div class="box"><img src="assets/3birds.png" width="70"></div>
-    <div style="font-size:40px;">=</div>
-    <div class="answerBox" id="a7"></div>
-  </div>
-
-  <div class="options">
-    <div class="option" onclick="check(this,7,'a7',7)">7</div>
-    <div class="option" onclick="wrong(this)">6</div>
-    <div class="option" onclick="wrong(this)">5</div>
-  </div>
-
-  <div class="tick">✔</div>
-  <div class="cross">✖</div>
-</div>
-
-<!-- SLIDE 8 -->
-<div class="slide bg" id="s8">
-  <div class="title">ADDITION</div>
-
-  <div class="equation">
-    <div class="box"><img src="assets/4candies.png" width="70"></div>
-    <div style="font-size:40px;">+</div>
-    <div class="box"><img src="assets/4candies2.png" width="70"></div>
-    <div style="font-size:40px;">=</div>
-    <div class="answerBox" id="a8"></div>
-  </div>
-
-  <div class="options">
-    <div class="option" onclick="wrong(this)">4</div>
-    <div class="option" onclick="check(this,8,'a8',8)">8</div>
-    <div class="option" onclick="wrong(this)">2</div>
-  </div>
-
-  <div class="tick">✔</div>
-  <div class="cross">✖</div>
-</div>
-
-<!-- SLIDE 9 -->
-<div class="slide" id="goodjob">
-  GOOD JOB!
-</div>
-
-<audio id="clap" src="assets/clap.mp3"></audio>
-<audio id="wrong" src="assets/wrong.mp3"></audio>
+<audio id="correctSound" src="assets/clap.mp3"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3"></audio>
 
 <script>
 
-let current=1;
+const slides = [
+{
+q1:"6carrots.png", q2:"4carrots.png", ans:10, options:[10,6,5]
+},
+{
+q1:"2crayons.png", q2:"4crayons.png", ans:6, options:[8,6,5]
+},
+{
+q1:"6pineapples.png", q2:"3pineapples.png", ans:9, options:[10,9,5]
+},
+{
+q1:"2stars.png", q2:"1star.png", ans:3, options:[6,4,3]
+},
+{
+q1:"3balloons.png", q2:"2balloons.png", ans:5, options:[9,7,5]
+},
+{
+q1:"4birds.png", q2:"3birds.png", ans:7, options:[7,6,5]
+},
+{
+q1:"4candies.png", q2:"4candies2.png", ans:8, options:[4,8,2]
+}
+];
 
-function show(n){
-  document.querySelectorAll(".slide").forEach(s=>s.classList.remove("active"));
-  document.getElementById(n).classList.add("active");
+let current = 0;
+
+const game = document.getElementById("game");
+const correctSound = document.getElementById("correctSound");
+const wrongSound = document.getElementById("wrongSound");
+
+setTimeout(()=>{
+document.getElementById("splash").style.display="none";
+game.style.display="flex";
+loadSlide();
+},3000);
+
+function loadSlide(){
+
+if(current >= slides.length){
+game.style.display="none";
+document.getElementById("end").style.display="block";
+return;
 }
 
-function check(el,ans,box,next){
-  let selected = el;
-  selected.style.display="none";
+let s = slides[current];
 
-  document.getElementById("clap").play();
+game.innerHTML = `
 
-  document.getElementById(box).innerHTML=ans;
+<div class="title">ADDITION</div>
 
-  let slide=document.getElementById("s"+next);
-  slide.querySelector(".tick").style.display="block";
+<div class="row">
+  <div class="imgBox"><img src="assets/${s.q1}"></div>
+  <div style="font-size:40px;">+</div>
+  <div class="imgBox"><img src="assets/${s.q2}"></div>
+  <div style="font-size:40px;">=</div>
+  <div class="box" id="answerBox"></div>
+</div>
 
-  setTimeout(()=>{
-    current++;
-    if(current<=8){
-      show("s"+current);
-    }else{
-      show("goodjob");
-      rain();
-    }
-  },1000);
+<div class="options">
+  ${s.options.map(o=>`
+    <div class="option" onclick="checkAnswer(${o})">${o}</div>
+  `).join("")}
+</div>
+
+<div id="feedback"></div>
+
+`;
+
 }
 
-function wrong(el){
-  document.getElementById("wrong").play();
-  let slide=el.parentElement.parentElement;
-  slide.querySelector(".cross").style.display="block";
-  setTimeout(()=>{
-    slide.querySelector(".cross").style.display="none";
-  },800);
+function checkAnswer(val){
+
+let s = slides[current];
+let feedback = document.getElementById("feedback");
+
+if(val === s.ans){
+
+correctSound.play();
+
+feedback.innerHTML = "✔";
+feedback.style.color="green";
+feedback.style.display="block";
+
+document.getElementById("answerBox").innerText = val;
+
+setTimeout(()=>{
+current++;
+loadSlide();
+},1000);
+
+}else{
+
+wrongSound.play();
+
+feedback.innerHTML = "✖";
+feedback.style.color="red";
+feedback.style.display="block";
+
+setTimeout(()=>{
+feedback.style.display="none";
+},700);
+
 }
 
-/* GOOD JOB RAIN */
-function rain(){
-  for(let i=0;i<30;i++){
-    let d=document.createElement("div");
-    d.className="fall";
-    d.innerHTML=Math.floor(Math.random()*10);
-    d.style.left=Math.random()*100+"vw";
-    d.style.color=["red","blue","green","orange"][Math.floor(Math.random()*4)];
-    document.body.appendChild(d);
-  }
 }
-
-/* AUTO MOVE FROM SLIDE 1 */
-setTimeout(()=>show("s2"),2000);
 
 </script>
 
