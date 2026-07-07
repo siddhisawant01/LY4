@@ -1,1887 +1,723 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>Build The Fire Truck Puzzle</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<title>Build The Fire Truck</title>
 
 <style>
-/* CSS WILL COME IN PART 2 */
-</style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#fff7e8;
+  touch-action:none;
+  user-select:none;
+}
+
+.screen{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.screen.active{
+  display:flex;
+}
+
+/* SLIDE 1 */
+#logoScreen{
+  background:white;
+}
+
+.logo{
+  width:min(42vw,220px);
+  height:auto;
+}
+
+/* GAME SCREEN */
+#gameScreen{
+  background:linear-gradient(180deg,#fff8df 0%,#ffe7b5 100%);
+  flex-direction:column;
+  padding:8px;
+}
+
+.instruction{
+  font-size:clamp(18px,4vw,30px);
+  font-weight:900;
+  color:#b91c1c;
+  text-align:center;
+  margin:2px 0 5px;
+  line-height:1.15;
+  text-shadow:1px 1px 0 white;
+}
+
+.reference-img{
+  width:min(64vw,390px);
+  max-height:18vh;
+  object-fit:contain;
+  margin-bottom:4px;
+  border:3px solid #ffffff;
+  border-radius:12px;
+  background:white;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Puzzle board */
+.board-wrap{
+  background:white;
+  border:4px solid #111827;
+  border-radius:12px;
+  padding:4px;
+  box-shadow:0 5px 14px rgba(0,0,0,0.22);
+  margin-bottom:6px;
+}
+
+.puzzle-board{
+  width:min(90vw,570px);
+  height:min(42vh,370px);
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,1fr);
+  gap:0;
+  background:#f9fafb;
+  border:2px dashed #9ca3af;
+  border-radius:6px;
+  overflow:hidden;
+}
+
+.slot{
+  border:1px dashed #d1d5db;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#ffffff;
+  position:relative;
+}
+
+.slot.filled{
+  border:none;
+  background:white;
+}
+
+.slot img{
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  display:block;
+}
+
+/* Pieces tray */
+.tray{
+  width:min(96vw,650px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+  padding:5px;
+  background:rgba(255,255,255,0.75);
+  border:3px solid #f97316;
+  border-radius:14px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.15);
+}
+
+.piece{
+  width:clamp(45px,14vw,82px);
+  height:clamp(58px,17vw,96px);
+  object-fit:cover;
+  background:white;
+  border:3px solid #2563eb;
+  border-radius:10px;
+  cursor:grab;
+  box-shadow:0 4px 8px rgba(0,0,0,0.25);
+  transition:transform 0.15s, border 0.15s;
+}
+
+.piece.selected{
+  border:4px solid #16a34a;
+  transform:scale(1.08);
+  box-shadow:0 0 18px #22c55e;
+}
+
+.piece.hidden{
+  visibility:hidden;
+  pointer-events:none;
+}
+
+/* Feedback */
+.feedback{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(0);
+  z-index:50;
+  font-size:min(24vw,130px);
+  font-weight:900;
+  pointer-events:none;
+}
+
+.feedback.show{
+  animation:pop 0.65s ease forwards;
+}
+
+.tick{
+  color:#16a34a;
+  text-shadow:0 0 15px white;
+}
+
+.cross{
+  color:#dc2626;
+  text-shadow:0 0 15px white;
+}
+
+@keyframes pop{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:0;}
+  30%{transform:translate(-50%,-50%) scale(1.3);opacity:1;}
+  75%{transform:translate(-50%,-50%) scale(1);opacity:1;}
+  100%{transform:translate(-50%,-50%) scale(0);opacity:0;}
+}
+
+.wiggle{
+  animation:wiggle 0.35s ease;
+}
+
+@keyframes wiggle{
+  0%,100%{transform:translateX(0);}
+  25%{transform:translateX(-8px);}
+  50%{transform:translateX(8px);}
+  75%{transform:translateX(-5px);}
+}
+
+/* END SCREEN */
+#endScreen{
+  background:linear-gradient(180deg,#bdefff 0%,#fff9c4 100%);
+  flex-direction:column;
+  text-align:center;
+  padding:10px;
+}
+
+.good-job{
+  font-size:clamp(42px,10vw,82px);
+  font-weight:900;
+  color:#dc2626;
+  text-shadow:3px 3px 0 #fff, 6px 6px 0 #fbbf24;
+  margin-bottom:20px;
+  animation:bounce 1s infinite alternate;
+}
+
+@keyframes bounce{
+  from{transform:translateY(0);}
+  to{transform:translateY(-12px);}
+}
+
+.road{
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:24vh;
+  background:#4b5563;
+  border-top:8px solid #374151;
+  overflow:hidden;
+}
+
+.road::after{
+  content:"";
+  position:absolute;
+  top:48%;
+  left:0;
+  width:200%;
+  height:8px;
+  background:repeating-linear-gradient(
+    90deg,
+    #ffffff 0 55px,
+    transparent 55px 105px
+  );
+  animation:roadMove 1.2s linear infinite;
+}
+
+@keyframes roadMove{
+  from{transform:translateX(0);}
+  to{transform:translateX(-105px);}
+}
+
+/* CSS Fire Truck Animation */
+.firetruck-runner{
+  position:absolute;
+  bottom:13vh;
+  right:-45vw;
+  width:min(65vw,430px);
+  height:min(32vw,210px);
+  animation:drive 5.5s linear forwards;
+}
+
+@keyframes drive{
+  from{right:-50vw;}
+  to{right:110vw;}
+}
+
+.truck-body{
+  position:absolute;
+  bottom:28px;
+  left:10%;
+  width:78%;
+  height:48%;
+  background:#e11d1d;
+  border:5px solid #7f1d1d;
+  border-radius:14px 20px 8px 8px;
+  box-shadow:inset 0 -12px 0 rgba(0,0,0,0.12);
+}
+
+.truck-cab{
+  position:absolute;
+  bottom:28px;
+  left:0;
+  width:38%;
+  height:68%;
+  background:#ef2222;
+  border:5px solid #7f1d1d;
+  border-radius:45px 12px 8px 8px;
+}
+
+.window{
+  position:absolute;
+  top:14%;
+  background:#8ee7ff;
+  border:4px solid #0f172a;
+  border-radius:10px;
+}
+
+.window.one{
+  left:18%;
+  width:28%;
+  height:35%;
+}
+
+.window.two{
+  left:50%;
+  width:28%;
+  height:35%;
+}
+
+.light{
+  position:absolute;
+  left:4%;
+  bottom:38%;
+  width:11%;
+  height:16%;
+  background:#facc15;
+  border:3px solid #7f1d1d;
+  border-radius:4px;
+}
+
+.bumper{
+  position:absolute;
+  bottom:20px;
+  left:-4%;
+  width:22%;
+  height:18%;
+  background:#cbd5e1;
+  border:4px solid #475569;
+  border-radius:8px;
+}
+
+.stripe{
+  position:absolute;
+  bottom:46%;
+  left:0;
+  width:100%;
+  height:12%;
+  background:white;
+}
+
+.ladder{
+  position:absolute;
+  top:5%;
+  left:25%;
+  width:68%;
+  height:14%;
+  background:repeating-linear-gradient(
+    90deg,
+    #d1d5db 0 12px,
+    #6b7280 12px 16px
+  );
+  border:4px solid #4b5563;
+  transform:rotate(-5deg);
+  border-radius:5px;
+}
+
+.siren{
+  position:absolute;
+  top:-16px;
+  left:22%;
+  width:12%;
+  height:15%;
+  background:red;
+  border:4px solid #7f1d1d;
+  border-radius:50% 50% 6px 6px;
+  animation:sirenFlash 0.3s infinite alternate;
+}
+
+@keyframes sirenFlash{
+  from{box-shadow:0 0 8px red;}
+  to{box-shadow:0 0 28px red;}
+}
+
+.wheel{
+  position:absolute;
+  bottom:0;
+  width:19%;
+  aspect-ratio:1/1;
+  background:#111827;
+  border:7px solid #020617;
+  border-radius:50%;
+  animation:wheelSpin 0.5s linear infinite;
+}
+
+.wheel::after{
+  content:"";
+  position:absolute;
+  inset:22%;
+  background:#d1d5db;
+  border-radius:50%;
+  border:4px dotted #374151;
+}
+
+.wheel.front{
+  left:17%;
+}
+
+.wheel.back{
+  right:14%;
+}
+
+@keyframes wheelSpin{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(-360deg);}
+}
+
+.play-again{
+  position:absolute;
+  bottom:28vh;
+  padding:12px 26px;
+  font-size:clamp(18px,4vw,26px);
+  font-weight:900;
+  border:none;
+  border-radius:30px;
+  background:#16a34a;
+  color:white;
+  box-shadow:0 5px 0 #166534;
+  cursor:pointer;
+}
+
+.play-again:active{
+  transform:translateY(4px);
+  box-shadow:0 1px 0 #166534;
+}
+
+@media(max-height:620px){
+  .instruction{
+    font-size:18px;
+    margin-bottom:2px;
+  }
+
+  .reference-img{
+    max-height:15vh;
+  }
+
+  .puzzle-board{
+    height:39vh;
+  }
+
+  .tray{
+    gap:4px;
+    padding:4px;
+  }
+
+  .piece{
+    width:44px;
+    height:58px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-
-<!-- ================= SPLASH SCREEN ================= -->
-
-<div id="splashScreen">
-
-    <img src="assets/innovine-logo.png" id="logo">
-
+<!-- Slide 1: Logo -->
+<div id="logoScreen" class="screen active">
+  <img src="assets/innovine-logo.png" class="logo" alt="Innovine Logo">
 </div>
 
+<!-- Slide 2: Game -->
+<div id="gameScreen" class="screen">
+  <div class="instruction">
+    Help build the fire truck! Move each puzzle piece to the correct spot and complete the picture.
+  </div>
 
+  <img src="assets/firetruck.png" class="reference-img" alt="Fire Truck Reference">
 
-<!-- ================= GAME SCREEN ================= -->
-
-<div id="gameScreen">
-
-
-    <!-- Instruction -->
-
-    <div id="instructionBox">
-
-        Help build the fire truck! Move each puzzle piece to the correct spot and complete the picture.
-
+  <div class="board-wrap">
+    <div class="puzzle-board" id="puzzleBoard">
+      <div class="slot" data-correct="1"></div>
+      <div class="slot" data-correct="2"></div>
+      <div class="slot" data-correct="3"></div>
+      <div class="slot" data-correct="4"></div>
+      <div class="slot" data-correct="5"></div>
+      <div class="slot" data-correct="6"></div>
     </div>
-
-
-
-    <!-- Reference Image -->
-
-    <div id="referenceContainer">
-
-        <img src="assets/firetruck.png" id="referenceImage">
-
-    </div>
-
-
-
-
-    <!-- Main Puzzle Area -->
-
-    <div id="puzzleArea">
-
-
-        <!-- Completed Puzzle Board -->
-
-        <div id="puzzleBoard">
-
-
-            <!-- 
-                6 fixed jigsaw positions
-                
-                Correct order:
-
-                1  2  3
-
-                4  5  6
-
-            -->
-
-
-            <div class="puzzleSlot" data-position="1"></div>
-
-            <div class="puzzleSlot" data-position="2"></div>
-
-            <div class="puzzleSlot" data-position="3"></div>
-
-
-            <div class="puzzleSlot" data-position="4"></div>
-
-            <div class="puzzleSlot" data-position="5"></div>
-
-            <div class="puzzleSlot" data-position="6"></div>
-
-
-
-        </div>
-
-
-
-    </div>
-
-
-
-
-
-    <!-- Puzzle Pieces Tray -->
-
-    <div id="piecesTray">
-
-
-        <!-- 
-            Random starting order:
-            
-            6 2 4 5 3 1
-
-        -->
-
-
-        <div class="piece" draggable="true" data-id="6">
-
-            <img src="assets/6.png">
-
-        </div>
-
-
-
-        <div class="piece" draggable="true" data-id="2">
-
-            <img src="assets/2.png">
-
-        </div>
-
-
-
-
-        <div class="piece" draggable="true" data-id="4">
-
-            <img src="assets/4.png">
-
-        </div>
-
-
-
-
-        <div class="piece" draggable="true" data-id="5">
-
-            <img src="assets/5.png">
-
-        </div>
-
-
-
-
-        <div class="piece" draggable="true" data-id="3">
-
-            <img src="assets/3.png">
-
-        </div>
-
-
-
-
-        <div class="piece" draggable="true" data-id="1">
-
-            <img src="assets/1.png">
-
-        </div>
-
-
-    </div>
-
-
-
-
+  </div>
+
+  <div class="tray" id="tray">
+    <img class="piece" src="assets/6.png" draggable="true" data-piece="6" alt="Puzzle piece 6">
+    <img class="piece" src="assets/2.png" draggable="true" data-piece="2" alt="Puzzle piece 2">
+    <img class="piece" src="assets/4.png" draggable="true" data-piece="4" alt="Puzzle piece 4">
+    <img class="piece" src="assets/5.png" draggable="true" data-piece="5" alt="Puzzle piece 5">
+    <img class="piece" src="assets/3.png" draggable="true" data-piece="3" alt="Puzzle piece 3">
+    <img class="piece" src="assets/1.png" draggable="true" data-piece="1" alt="Puzzle piece 1">
+  </div>
 </div>
 
+<!-- Slide 3: End -->
+<div id="endScreen" class="screen">
+  <div class="good-job">Good job!</div>
 
-
-
-
-<!-- ================= FEEDBACK ================= -->
-
-<div id="tickMark">
-
-    ✓
-
-</div>
-
-
-<div id="wrongMark">
-
-    ✖
-
-</div>
-
-
-
-
-
-
-<!-- ================= FINAL SCREEN ================= -->
-
-
-<div id="finalScreen">
-
-
-    <div id="goodJob">
-
-        Good job!
-
+  <div class="firetruck-runner">
+    <div class="ladder"></div>
+    <div class="truck-body">
+      <div class="stripe"></div>
     </div>
-
-
-
-    <!-- Animated SVG fire truck will be added in JS -->
-
-    <div id="runningTruckContainer">
-
-
+    <div class="truck-cab">
+      <div class="window one"></div>
+      <div class="window two"></div>
+      <div class="light"></div>
+      <div class="bumper"></div>
+      <div class="siren"></div>
     </div>
+    <div class="wheel front"></div>
+    <div class="wheel back"></div>
+  </div>
 
-
-
-
-    <button id="playAgain">
-
-        Play Again
-
-    </button>
-
-
+  <button class="play-again" onclick="restartGame()">Play Again</button>
+  <div class="road"></div>
 </div>
 
+<div id="tick" class="feedback tick">✓</div>
+<div id="cross" class="feedback cross">✗</div>
 
-
-
-
-
-
-<!-- AUDIO -->
-
-<audio id="wrongSound" src="assets/wrong.mp3"></audio>
-
-<audio id="clapSound" src="assets/clap.mp3"></audio>
-
-
+<audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
+<audio id="clapSound" src="assets/clap.mp3" preload="auto"></audio>
 
 <script>
-
-/* JAVASCRIPT WILL COME IN PART 3 */
-
-
-</script>
-
-
-</body>
-
-</html>
-*{
-    box-sizing:border-box;
-    user-select:none;
-    -webkit-user-select:none;
-}
-
-
-html,body{
-
-    margin:0;
-    padding:0;
-
-    width:100%;
-    height:100%;
-
-    overflow:hidden;
-
-    font-family:'Fredoka',Arial,sans-serif;
-
-    background:#fff7df;
-
-    touch-action:none;
-
-}
-
-
-
-
-
-/* ================= SPLASH ================= */
-
-
-#splashScreen{
-
-    position:fixed;
-
-    inset:0;
-
-    background:white;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    z-index:9999;
-
-}
-
-
-#logo{
-
-    width:220px;
-
-    max-width:45vw;
-
-}
-
-
-
-
-
-
-
-/* ================= GAME SCREEN ================= */
-
-
-#gameScreen{
-
-    display:none;
-
-    width:100vw;
-
-    height:100vh;
-
-    height:100svh;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    padding:8px;
-
-}
-
-
-
-
-
-/* ================= INSTRUCTION ================= */
-
-
-#instructionBox{
-
-
-    width:95%;
-
-    max-width:900px;
-
-    background:white;
-
-    border:3px solid #ffb703;
-
-    border-radius:18px;
-
-    padding:8px 15px;
-
-    text-align:center;
-
-    font-size:clamp(16px,2.4vw,28px);
-
-    font-weight:700;
-
-    color:#1d3557;
-
-    box-shadow:0 5px 0 #f59e0b;
-
-
-}
-
-
-
-
-
-
-
-/* ================= REFERENCE IMAGE ================= */
-
-
-#referenceContainer{
-
-
-    margin-top:6px;
-
-
-    width:95%;
-
-    height:13vh;
-
-
-    min-height:70px;
-
-
-    background:white;
-
-    border-radius:16px;
-
-    border:3px solid #60a5fa;
-
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-
-}
-
-
-#referenceImage{
-
-
-    height:95%;
-
-    width:auto;
-
-    object-fit:contain;
-
-}
-
-
-
-
-
-
-
-/* ================= PUZZLE AREA ================= */
-
-
-#puzzleArea{
-
-
-    width:95%;
-
-
-    flex:1;
-
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-
-    margin-top:6px;
-
-
-}
-
-
-
-
-
-
-/* Smaller puzzle box */
-
-
-#puzzleBoard{
-
-
-    width:min(75vw,650px);
-
-
-    height:min(42vh,390px);
-
-
-    display:grid;
-
-
-    grid-template-columns:repeat(3,1fr);
-
-    grid-template-rows:repeat(2,1fr);
-
-
-    background:white;
-
-
-    border:3px dashed #64748b;
-
-
-    border-radius:15px;
-
-
-    overflow:hidden;
-
-
-}
-
-
-
-
-
-
-.puzzleSlot{
-
-
-    position:relative;
-
-
-    border:1px dashed #cbd5e1;
-
-
-    background:#f8fafc;
-
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-
-}
-
-
-
-
-/*
-
-After joining pieces:
-no gaps
-
-*/
-
-
-.puzzleSlot img{
-
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:contain;
-
-    pointer-events:none;
-
-}
-
-
-
-
-
-
-/* ================= PIECE TRAY ================= */
-
-
-#piecesTray{
-
-
-    width:95%;
-
-
-    height:15vh;
-
-
-    min-height:80px;
-
-
-    background:white;
-
-
-    border:3px solid #fb923c;
-
-
-    border-radius:18px;
-
-
-    display:grid;
-
-
-    grid-template-columns:repeat(6,1fr);
-
-
-    gap:6px;
-
-
-    padding:6px;
-
-
-    box-shadow:0 5px 0 #ea580c;
-
-
-}
-
-
-
-
-
-
-.piece{
-
-
-    background:white;
-
-
-    border:2px solid #334155;
-
-
-    border-radius:12px;
-
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-
-    padding:3px;
-
-
-    cursor:pointer;
-
-
-    transition:.2s;
-
-
-}
-
-
-
-
-
-.piece img{
-
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:contain;
-
-
-}
-
-
-
-
-
-
-.piece.dragging{
-
-
-    position:fixed;
-
-    z-index:2000;
-
-    transform:scale(1.08);
-
-
-    pointer-events:none;
-
-
-}
-
-
-
-
-
-.piece.correctPlaced{
-
-
-    border:none;
-
-    padding:0;
-
-    background:none;
-
-}
-
-
-
-
-
-/* ================= FEEDBACK ================= */
-
-
-#tickMark,
-#wrongMark{
-
-
-    position:fixed;
-
-
-    left:50%;
-
-    top:50%;
-
-
-    transform:translate(-50%,-50%) scale(0);
-
-
-    font-size:120px;
-
-
-    font-weight:bold;
-
-
-    z-index:3000;
-
-
-}
-
-
-
-#tickMark{
-
-    color:#16a34a;
-
-}
-
-
-#wrongMark{
-
-    color:#dc2626;
-
-}
-
-
-
-
-
-.showFeedback{
-
-
-    animation:feedback .8s ease;
-
-
-}
-
-
-
-
-
-@keyframes feedback{
-
-
-0%{
-
-transform:translate(-50%,-50%) scale(0);
-
-}
-
-
-35%{
-
-transform:translate(-50%,-50%) scale(1.3);
-
-}
-
-
-100%{
-
-transform:translate(-50%,-50%) scale(0);
-
-}
-
-
-}
-
-
-
-
-
-
-/* ================= FINAL SCREEN ================= */
-
-
-
-#finalScreen{
-
-
-    display:none;
-
-
-    width:100vw;
-
-    height:100vh;
-
-    height:100svh;
-
-
-    overflow:hidden;
-
-
-    position:relative;
-
-
-    background:linear-gradient(#dff6ff,#fff3c4);
-
-
-}
-
-
-
-
-
-#goodJob{
-
-
-    position:absolute;
-
-
-    top:8vh;
-
-
-    width:100%;
-
-
-    text-align:center;
-
-
-    font-size:clamp(55px,10vw,110px);
-
-
-    color:#e11d48;
-
-
-    font-weight:900;
-
-
-    text-shadow:
-
-    4px 4px white,
-
-    7px 7px #fbbf24;
-
-
-}
-
-
-
-
-#runningTruckContainer{
-
-
-    position:absolute;
-
-
-    bottom:18vh;
-
-
-    width:100%;
-
-
-    height:35vh;
-
-
-    overflow:hidden;
-
-
-}
-
-
-
-
-
-
-.runningTruck{
-
-
-    position:absolute;
-
-
-    right:-45vw;
-
-
-    bottom:0;
-
-
-    width:min(55vw,500px);
-
-
-    animation:truckMove 5s linear infinite;
-
-
-}
-
-
-
-
-
-@keyframes truckMove{
-
-
-0%{
-
-
-right:-55vw;
-
-
-}
-
-
-100%{
-
-
-right:120vw;
-
-
-}
-
-
-}
-
-
-
-
-
-
-
-#playAgain{
-
-
-    position:absolute;
-
-
-    bottom:5vh;
-
-
-    left:50%;
-
-
-    transform:translateX(-50%);
-
-
-    background:#22c55e;
-
-
-    color:white;
-
-
-    border:none;
-
-
-    border-radius:40px;
-
-
-    padding:15px 40px;
-
-
-    font-size:28px;
-
-
-    font-weight:bold;
-
-
-    box-shadow:0 6px 0 #15803d;
-
-
-}
-
-
-
-
-
-
-
-/* ================= MOBILE ================= */
-
-
-@media(max-width:700px){
-
-
-
-#gameScreen{
-
-
-padding:5px;
-
-
-}
-
-
-
-#instructionBox{
-
-
-font-size:15px;
-
-padding:7px;
-
-
-}
-
-
-
-#referenceContainer{
-
-
-height:12vh;
-
-
-}
-
-
-
-#puzzleBoard{
-
-
-width:92vw;
-
-
-height:35vh;
-
-
-}
-
-
-
-#piecesTray{
-
-
-height:17vh;
-
-
-gap:3px;
-
-}
-
-
-
-.piece{
-
-
-border-radius:8px;
-
-}
-
-
-
-
-#goodJob{
-
-
-top:10vh;
-
-
-}
-
-
-
-.runningTruck{
-
-
-width:75vw;
-
-
-}
-
-
-}
-
-
-
-
-
-
-/* landscape phones */
-
-
-@media(max-height:550px){
-
-
-#referenceContainer{
-
-height:10vh;
-
-}
-
-
-#puzzleBoard{
-
-
-height:50vh;
-
-}
-
-
-
-#piecesTray{
-
-
-height:18vh;
-
-}
-
-
-
-}
-/* ================= VARIABLES ================= */
-
-
-const splashScreen = document.getElementById("splashScreen");
+const logoScreen = document.getElementById("logoScreen");
 const gameScreen = document.getElementById("gameScreen");
-const finalScreen = document.getElementById("finalScreen");
+const endScreen = document.getElementById("endScreen");
 
-const pieces = document.querySelectorAll(".piece");
-const slots = document.querySelectorAll(".puzzleSlot");
-
-const tick = document.getElementById("tickMark");
-const cross = document.getElementById("wrongMark");
+const tick = document.getElementById("tick");
+const cross = document.getElementById("cross");
 
 const wrongSound = document.getElementById("wrongSound");
 const clapSound = document.getElementById("clapSound");
 
-const runningTruckContainer =
-document.getElementById("runningTruckContainer");
+const slots = document.querySelectorAll(".slot");
+const pieces = document.querySelectorAll(".piece");
 
-let completed = 0;
+let selectedPiece = null;
+let draggedPiece = null;
+let placedCount = 0;
+let sirenInterval = null;
 
-let activePiece = null;
+/* Slide 1 visible for 3 seconds */
+setTimeout(() => {
+  logoScreen.classList.remove("active");
+  gameScreen.classList.add("active");
+}, 3000);
 
-let offsetX = 0;
-let offsetY = 0;
+/* Unlock audio on first touch/click */
+document.body.addEventListener("pointerdown", () => {
+  wrongSound.load();
+  clapSound.load();
+}, {once:true});
 
+function showFeedback(type){
+  const icon = type === "tick" ? tick : cross;
+  icon.classList.remove("show");
+  void icon.offsetWidth;
+  icon.classList.add("show");
+}
 
+function playWrong(){
+  try{
+    wrongSound.currentTime = 0;
+    wrongSound.play();
+  }catch(e){}
+}
 
+function playClap(){
+  try{
+    clapSound.currentTime = 0;
+    clapSound.play();
+  }catch(e){}
+}
 
+/* Browser-generated fire truck siren */
+function startFireTruckSound(){
+  try{
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioContext();
 
+    sirenInterval = setInterval(() => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
 
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(550, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(950, ctx.currentTime + 0.35);
+      osc.frequency.linearRampToValueAtTime(550, ctx.currentTime + 0.7);
 
-/* ================= SPLASH ================= */
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.05);
+      gain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.75);
 
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.8);
+    }, 820);
 
-window.onload=function(){
+    setTimeout(() => {
+      clearInterval(sirenInterval);
+      sirenInterval = null;
+    }, 5200);
 
+  }catch(e){}
+}
 
-setTimeout(()=>{
+function placePiece(piece, slot){
+  if(!piece || !slot || slot.classList.contains("filled")) return;
 
+  const pieceNo = piece.dataset.piece;
+  const correctNo = slot.dataset.correct;
 
-splashScreen.style.display="none";
+  if(pieceNo === correctNo){
+    const placedImg = document.createElement("img");
+    placedImg.src = piece.src;
+    placedImg.alt = "Placed puzzle piece";
 
-gameScreen.style.display="flex";
+    slot.innerHTML = "";
+    slot.appendChild(placedImg);
+    slot.classList.add("filled");
 
+    piece.classList.add("hidden");
+    piece.classList.remove("selected");
+    selectedPiece = null;
 
-},3000);
+    showFeedback("tick");
+    placedCount++;
 
+    if(placedCount === 6){
+      setTimeout(() => {
+        playClap();
+        gameScreen.classList.remove("active");
+        endScreen.classList.add("active");
+        startFireTruckSound();
+      }, 800);
+    }
+  }else{
+    showFeedback("cross");
+    playWrong();
 
-};
+    slot.classList.add("wiggle");
+    setTimeout(() => slot.classList.remove("wiggle"), 350);
 
+    piece.classList.add("wiggle");
+    setTimeout(() => piece.classList.remove("wiggle"), 350);
+  }
+}
 
+/* Tap-to-select for preschool learners */
+pieces.forEach(piece => {
+  piece.addEventListener("click", () => {
+    if(piece.classList.contains("hidden")) return;
 
+    pieces.forEach(p => p.classList.remove("selected"));
+    piece.classList.add("selected");
+    selectedPiece = piece;
+  });
 
+  piece.addEventListener("dragstart", e => {
+    draggedPiece = piece;
+    e.dataTransfer.setData("text/plain", piece.dataset.piece);
+  });
 
-
-
-/* ================= DRAG SYSTEM ================= */
-
-
-
-pieces.forEach(piece=>{
-
-
-piece.addEventListener("pointerdown",startDrag);
-
-
+  piece.addEventListener("dragend", () => {
+    draggedPiece = null;
+  });
 });
 
-
-
-
-function startDrag(e){
-
-
-if(this.classList.contains("correctPlaced"))
-return;
-
-
-
-activePiece=this;
-
-
-let rect=this.getBoundingClientRect();
-
-
-
-offsetX=e.clientX-rect.left;
-
-offsetY=e.clientY-rect.top;
-
-
-
-this.style.width=rect.width+"px";
-
-this.style.height=rect.height+"px";
-
-
-
-this.classList.add("dragging");
-
-
-
-this.style.left=
-(rect.left)+"px";
-
-
-this.style.top=
-(rect.top)+"px";
-
-
-document.body.appendChild(this);
-
-
-
-document.addEventListener(
-"pointermove",
-dragMove
-);
-
-
-
-document.addEventListener(
-"pointerup",
-dropPiece,
-{once:true}
-);
-
-
-
-}
-
-
-
-
-
-function dragMove(e){
-
-
-if(!activePiece)
-return;
-
-
-
-activePiece.style.left=
-(e.clientX-offsetX)+"px";
-
-
-activePiece.style.top=
-(e.clientY-offsetY)+"px";
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function dropPiece(e){
-
-
-
-document.removeEventListener(
-"pointermove",
-dragMove
-);
-
-
-
-if(!activePiece)
-return;
-
-
-
-
-let placed=false;
-
-
-
-slots.forEach(slot=>{
-
-
-
-let rect=slot.getBoundingClientRect();
-
-
-
-if(
-
-e.clientX>rect.left &&
-e.clientX<rect.right &&
-e.clientY>rect.top &&
-e.clientY<rect.bottom
-
-
-){
-
-
-
-let correct =
-slot.dataset.position;
-
-
-
-let id =
-activePiece.dataset.id;
-
-
-
-if(correct===id){
-
-
-
-snapPiece(activePiece,slot);
-
-
-placed=true;
-
-
-
-}
-
-else{
-
-
-wrongAnswer(activePiece);
-
-
-}
-
-
-
-}
-
-
+/* Tap slot or drop piece */
+slots.forEach(slot => {
+  slot.addEventListener("click", () => {
+    if(selectedPiece){
+      placePiece(selectedPiece, slot);
+    }
+  });
+
+  slot.addEventListener("dragover", e => {
+    e.preventDefault();
+  });
+
+  slot.addEventListener("drop", e => {
+    e.preventDefault();
+    if(draggedPiece){
+      placePiece(draggedPiece, slot);
+    }
+  });
 });
 
+/* Touch drag support for mobile */
+pieces.forEach(piece => {
+  piece.addEventListener("touchstart", e => {
+    if(piece.classList.contains("hidden")) return;
+    selectedPiece = piece;
+    pieces.forEach(p => p.classList.remove("selected"));
+    piece.classList.add("selected");
+  }, {passive:true});
+});
 
+function restartGame(){
+  clearInterval(sirenInterval);
 
+  placedCount = 0;
+  selectedPiece = null;
+  draggedPiece = null;
 
-if(!placed){
+  slots.forEach(slot => {
+    slot.innerHTML = "";
+    slot.classList.remove("filled");
+  });
 
+  pieces.forEach(piece => {
+    piece.classList.remove("hidden","selected","wiggle");
+  });
 
-resetPiece(activePiece);
-
-
+  endScreen.classList.remove("active");
+  gameScreen.classList.add("active");
 }
+</script>
 
-
-
-activePiece=null;
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ================= SNAP PIECE ================= */
-
-
-
-function snapPiece(piece,slot){
-
-
-
-piece.classList.remove("dragging");
-
-
-piece.classList.add("correctPlaced");
-
-
-
-piece.style.position="relative";
-
-piece.style.left="0";
-
-piece.style.top="0";
-
-piece.style.width="100%";
-
-piece.style.height="100%";
-
-
-
-slot.appendChild(piece);
-
-
-
-showTick();
-
-
-
-completed++;
-
-
-
-if(completed===6){
-
-
-setTimeout(finishGame,900);
-
-
-}
-
-
-}
-
-
-
-
-
-
-
-/* ================= WRONG ================= */
-
-
-
-function wrongAnswer(piece){
-
-
-
-try{
-
-wrongSound.currentTime=0;
-
-wrongSound.play();
-
-}
-
-catch(e){}
-
-
-
-showCross();
-
-
-
-piece.animate(
-
-[
-
-{transform:"translateX(0)"},
-
-{transform:"translateX(-12px)"},
-
-{transform:"translateX(12px)"},
-
-{transform:"translateX(0)"}
-
-],
-
-{
-
-duration:350
-
-}
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function resetPiece(piece){
-
-
-piece.classList.remove("dragging");
-
-
-piece.style.position="";
-
-piece.style.left="";
-
-piece.style.top="";
-
-piece.style.width="";
-
-piece.style.height="";
-
-
-
-document.getElementById(
-"piecesTray"
-).appendChild(piece);
-
-
-
-}
-
-
-
-
-
-
-
-
-/* ================= FEEDBACK ================= */
-
-
-
-function showTick(){
-
-
-tick.classList.remove("showFeedback");
-
-void tick.offsetWidth;
-
-tick.classList.add("showFeedback");
-
-
-}
-
-
-
-
-function showCross(){
-
-
-cross.classList.remove("showFeedback");
-
-void cross.offsetWidth;
-
-cross.classList.add("showFeedback");
-
-
-}
-
-
-
-
-
-
-
-/* ================= COMPLETE ================= */
-
-
-
-function finishGame(){
-
-
-
-try{
-
-clapSound.currentTime=0;
-
-clapSound.play();
-
-}
-
-catch(e){}
-
-
-
-
-createConfetti();
-
-
-
-setTimeout(()=>{
-
-
-gameScreen.style.display="none";
-
-
-finalScreen.style.display="block";
-
-
-createRunningTruck();
-
-
-
-},1200);
-
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ================= CONFETTI ================= */
-
-
-
-function createConfetti(){
-
-
-for(let i=0;i<80;i++){
-
-
-let c=document.createElement("div");
-
-
-c.style.position="fixed";
-
-c.style.width="12px";
-
-c.style.height="18px";
-
-c.style.top="-20px";
-
-c.style.left=Math.random()*100+"vw";
-
-
-c.style.background=
-
-[
-
-"#ef4444",
-
-"#22c55e",
-
-"#3b82f6",
-
-"#facc15",
-
-"#f97316",
-
-"#a855f7"
-
-]
-
-[Math.floor(Math.random()*6)];
-
-
-
-c.style.zIndex="5000";
-
-
-
-c.animate(
-
-[
-
-{
-transform:"translateY(0) rotate(0deg)"
-},
-
-{
-transform:
-`translateY(110vh) rotate(720deg)`
-}
-
-],
-
-{
-
-duration:2200,
-
-delay:Math.random()*800
-
-}
-
-);
-
-
-
-document.body.appendChild(c);
-
-
-
-setTimeout(()=>{
-
-c.remove();
-
-},3000);
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ================= FINAL SVG FIRE TRUCK ================= */
-
-
-
-function createRunningTruck(){
-
-
-
-runningTruckContainer.innerHTML=`
-
-
-<svg class="runningTruck"
-viewBox="0 0 600 300">
-
-
-<rect x="80" y="130"
-width="360"
-height="100"
-rx="20"
-fill="#ef1b1b"
-stroke="#7f1d1d"
-stroke-width="6"/>
-
-
-
-<rect x="150"
-y="85"
-width="120"
-height="70"
-rx="15"
-fill="#8ed8ff"
-stroke="#1e3a8a"
-stroke-width="5"/>
-
-
-
-<rect x="285"
-y="85"
-width="110"
-height="70"
-rx="15"
-fill="#8ed8ff"
-stroke="#1e3a8a"
-stroke-width="5"/>
-
-
-
-<rect x="80"
-y="175"
-width="360"
-height="15"
-fill="white"/>
-
-
-
-
-<rect x="420"
-y="150"
-width="80"
-height="80"
-rx="12"
-fill="#dc2626"
-stroke="#7f1d1d"
-stroke-width="5"/>
-
-
-
-<!-- ladder -->
-
-<line x1="260"
-y1="55"
-x2="520"
-y2="95"
-stroke="#64748b"
-stroke-width="10"/>
-
-<line x1="250"
-y1="75"
-x2="510"
-y2="115"
-stroke="#64748b"
-stroke-width="10"/>
-
-
-<line x1="300"
-y1="62"
-x2="320"
-y2="90"
-stroke="#64748b"
-stroke-width="8"/>
-
-<line x1="360"
-y1="72"
-x2="380"
-y2="100"
-stroke="#64748b"
-stroke-width="8"/>
-
-<line x1="420"
-y1="82"
-x2="440"
-y2="110"
-stroke="#64748b"
-stroke-width="8"/>
-
-
-
-
-
-<!-- wheels -->
-
-<circle cx="170"
-cy="240"
-r="45"
-fill="#111827"/>
-
-
-<circle cx="170"
-cy="240"
-r="22"
-fill="#d1d5db"/>
-
-
-
-<circle cx="400"
-cy="240"
-r="45"
-fill="#111827"/>
-
-
-<circle cx="400"
-cy="240"
-r="22"
-fill="#d1d5db"/>
-
-
-
-
-<!-- siren -->
-
-
-<rect x="210"
-y="45"
-width="45"
-height="35"
-rx="15"
-fill="#ef4444"/>
-
-
-</svg>
-
-
-
-`;
-
-
-
-}
-
-
-
-
-
-
-
-/* ================= PLAY AGAIN ================= */
-
-
-
-document.getElementById("playAgain")
-.onclick=function(){
-
-
-
-location.reload();
-
-
-};
+</body>
+</html>
