@@ -1,857 +1,1887 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Fire Truck Puzzle Game</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Build The Fire Truck Puzzle</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #fff7e8;
-  user-select: none;
-  touch-action: none;
-}
-
-#splash {
-  position: fixed;
-  inset: 0;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-#splash img {
-  width: min(42vw, 220px);
-  height: auto;
-}
-
-.slide {
-  display: none;
-  width: 100vw;
-  height: 100vh;
-  height: 100svh;
-  overflow: hidden;
-}
-
-.slide.active {
-  display: flex;
-}
-
-#gameSlide {
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 8px;
-  background: linear-gradient(180deg, #fff8df 0%, #e8f8ff 100%);
-}
-
-.instruction {
-  width: 96%;
-  max-width: 1100px;
-  text-align: center;
-  font-size: clamp(15px, 2.6vw, 27px);
-  font-weight: 900;
-  line-height: 1.18;
-  color: #13213a;
-  background: #ffffff;
-  border: 3px solid #ffb703;
-  border-radius: 18px;
-  padding: 7px 10px;
-  box-shadow: 0 5px 0 #f4a300;
-}
-
-.playArea {
-  width: 96%;
-  max-width: 1120px;
-  height: calc(100vh - 72px);
-  height: calc(100svh - 72px);
-  display: grid;
-  grid-template-columns: 1fr 0.34fr;
-  gap: 8px;
-  margin-top: 7px;
-}
-
-.leftPanel {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  height: 100%;
-}
-
-.referenceBox {
-  background: #ffffff;
-  border: 3px solid #73c7ff;
-  border-radius: 18px;
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  box-shadow: 0 5px 12px rgba(0,0,0,0.12);
-}
-
-.referenceBox .refTitle {
-  font-size: clamp(11px, 1.8vw, 18px);
-  font-weight: 900;
-  color: #064e7a;
-  margin-bottom: 4px;
-  text-align: center;
-}
-
-.referenceBox img {
-  width: 100%;
-  height: auto;
-  max-height: 72vh;
-  object-fit: contain;
-}
-
-.boardWrap {
-  flex: 1;
-  min-height: 0;
-  background: #ffffff;
-  border: 4px solid #1d3557;
-  border-radius: 20px;
-  padding: 8px;
-  box-shadow: 0 8px 0 #9bc9e9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.board {
-  width: 100%;
-  max-width: 820px;
-  aspect-ratio: 4 / 3;
-  max-height: 100%;
-  background: #fff;
-  border: 4px dashed #b8c0cc;
-  border-radius: 16px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  overflow: hidden;
-  position: relative;
-}
-
-.slot {
-  border: 2px dashed #ccd3dd;
-  background: #fbfdff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.slot::after {
-  content: "";
-  width: 38%;
-  height: 38%;
-  border-radius: 16px;
-  background: rgba(59,130,246,0.07);
-  position: absolute;
-}
-
-.slot.hover {
-  background: #e8fff0;
-  border-color: #22c55e;
-}
-
-.slot img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  z-index: 2;
-}
-
-.tray {
-  min-height: 96px;
-  max-height: 27vh;
-  background: #fff;
-  border: 4px solid #f97316;
-  border-radius: 20px;
-  padding: 7px;
-  box-shadow: 0 7px 0 #ea580c;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 6px;
-  align-items: center;
-}
-
-.piece {
-  background: #ffffff;
-  border: 3px solid #334155;
-  border-radius: 14px;
-  padding: 3px;
-  cursor: grab;
-  height: 100%;
-  min-height: 72px;
-  max-height: 130px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 0 #94a3b8;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  touch-action: none;
-}
-
-.piece img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-.piece.selected {
-  border-color: #22c55e;
-  box-shadow: 0 0 0 5px rgba(34,197,94,0.28);
-  transform: translateY(-3px);
-}
-
-.piece.dragging {
-  position: fixed;
-  z-index: 2000;
-  pointer-events: none;
-  cursor: grabbing;
-  opacity: 0.96;
-  transform: scale(1.04);
-}
-
-.piece.placed {
-  border: none;
-  box-shadow: none;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  max-height: none;
-  cursor: default;
-}
-
-.feedback {
-  position: fixed;
-  left: 50%;
-  top: 48%;
-  transform: translate(-50%, -50%) scale(0);
-  font-size: clamp(70px, 18vw, 170px);
-  font-weight: 900;
-  z-index: 3000;
-  pointer-events: none;
-  text-shadow: 0 7px 18px rgba(0,0,0,0.22);
-}
-
-.feedback.show {
-  animation: popMark 0.75s ease forwards;
-}
-
-.feedback.tick {
-  color: #16a34a;
-}
-
-.feedback.cross {
-  color: #dc2626;
-}
-
-@keyframes popMark {
-  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-  35% { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
-  70% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-}
-
-.wiggle {
-  animation: wiggle 0.35s ease;
-}
-
-@keyframes wiggle {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-8px); }
-  40% { transform: translateX(8px); }
-  60% { transform: translateX(-6px); }
-  80% { transform: translateX(6px); }
-}
-
-#endSlide {
-  position: relative;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, #dff6ff 0%, #fff6d8 100%);
-}
-
-.goodJob {
-  position: absolute;
-  top: 9vh;
-  width: 100%;
-  text-align: center;
-  font-size: clamp(42px, 10vw, 110px);
-  font-weight: 900;
-  color: #e11d48;
-  text-shadow: 4px 4px 0 #ffffff, 7px 7px 0 #fbbf24;
-  z-index: 5;
-}
-
-.road {
-  position: absolute;
-  bottom: 17vh;
-  width: 100%;
-  height: 12vh;
-  background: #3b3b3b;
-  border-top: 8px solid #222;
-  border-bottom: 8px solid #222;
-}
-
-.road::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 48%;
-  width: 100%;
-  height: 8px;
-  background: repeating-linear-gradient(
-    90deg,
-    #fff 0 60px,
-    transparent 60px 120px
-  );
-}
-
-.runningTruck {
-  position: absolute;
-  bottom: 21vh;
-  left: -45vw;
-  width: min(42vw, 340px);
-  height: auto;
-  animation: driveTruck 4.2s linear infinite;
-  z-index: 3;
-}
-
-@keyframes driveTruck {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(150vw); }
-}
-
-.playAgain {
-  position: absolute;
-  bottom: 4vh;
-  padding: 14px 30px;
-  border: none;
-  border-radius: 999px;
-  background: #22c55e;
-  color: #ffffff;
-  font-size: clamp(20px, 4vw, 34px);
-  font-weight: 900;
-  box-shadow: 0 7px 0 #15803d;
-}
-
-.playAgain:active {
-  transform: translateY(5px);
-  box-shadow: 0 2px 0 #15803d;
-}
-
-.confetti {
-  position: fixed;
-  top: -20px;
-  width: 12px;
-  height: 18px;
-  opacity: 0.95;
-  z-index: 2500;
-  animation: fall 2.2s linear forwards;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(110vh) rotate(720deg);
-    opacity: 0.8;
-  }
-}
-
-@media (max-width: 760px) {
-  #gameSlide {
-    padding: 6px;
-  }
-
-  .instruction {
-    font-size: clamp(13px, 3.5vw, 17px);
-    padding: 6px 8px;
-    border-radius: 14px;
-  }
-
-  .playArea {
-    width: 98%;
-    height: calc(100vh - 62px);
-    height: calc(100svh - 62px);
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-    gap: 5px;
-  }
-
-  .referenceBox {
-    order: 1;
-    height: 13vh;
-    min-height: 68px;
-    flex-direction: row;
-    gap: 5px;
-    padding: 4px;
-    border-radius: 12px;
-  }
-
-  .referenceBox .refTitle {
-    width: 34%;
-    font-size: 11px;
-    margin: 0;
-  }
-
-  .referenceBox img {
-    width: 66%;
-    height: 100%;
-    max-height: 100%;
-  }
-
-  .leftPanel {
-    order: 2;
-    display: contents;
-  }
-
-  .boardWrap {
-    order: 2;
-    padding: 5px;
-    border-radius: 14px;
-    border-width: 3px;
-    box-shadow: 0 5px 0 #9bc9e9;
-    min-height: 0;
-  }
-
-  .board {
-    max-height: 100%;
-    width: 100%;
-    border-width: 3px;
-    border-radius: 10px;
-  }
-
-  .slot {
-    border-width: 1.5px;
-  }
-
-  .tray {
-    order: 3;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 4px;
-    padding: 5px;
-    min-height: 70px;
-    height: 18vh;
-    border-width: 3px;
-    border-radius: 14px;
-    box-shadow: 0 5px 0 #ea580c;
-  }
-
-  .piece {
-    min-height: 54px;
-    max-height: 105px;
-    border-width: 2px;
-    border-radius: 10px;
-    padding: 2px;
-  }
-
-  .runningTruck {
-    width: 68vw;
-    left: -75vw;
-  }
-}
-
-@media (max-height: 520px) and (orientation: landscape) {
-  .instruction {
-    font-size: 14px;
-    padding: 4px 8px;
-  }
-
-  .playArea {
-    height: calc(100vh - 50px);
-    height: calc(100svh - 50px);
-    grid-template-columns: 1fr 0.25fr;
-  }
-
-  .tray {
-    min-height: 58px;
-    max-height: 22vh;
-  }
-
-  .piece {
-    min-height: 46px;
-    max-height: 78px;
-  }
-
-  .referenceBox .refTitle {
-    font-size: 10px;
-  }
-}
+/* CSS WILL COME IN PART 2 */
 </style>
+
 </head>
 
 <body>
 
-<div id="splash">
-  <img src="assets/innovine-logo.png" alt="Innovine Logo">
+
+<!-- ================= SPLASH SCREEN ================= -->
+
+<div id="splashScreen">
+
+    <img src="assets/innovine-logo.png" id="logo">
+
 </div>
 
-<section id="gameSlide" class="slide">
-  <div class="instruction">
-    Drag the puzzle pieces and put them in the correct places to complete the fire truck.
-  </div>
 
-  <div class="playArea">
-    <div class="leftPanel">
-      <div class="boardWrap">
-        <div class="board" id="board">
-          <div class="slot" data-correct="1"></div>
-          <div class="slot" data-correct="2"></div>
-          <div class="slot" data-correct="3"></div>
-          <div class="slot" data-correct="4"></div>
-          <div class="slot" data-correct="5"></div>
-          <div class="slot" data-correct="6"></div>
+
+<!-- ================= GAME SCREEN ================= -->
+
+<div id="gameScreen">
+
+
+    <!-- Instruction -->
+
+    <div id="instructionBox">
+
+        Help build the fire truck! Move each puzzle piece to the correct spot and complete the picture.
+
+    </div>
+
+
+
+    <!-- Reference Image -->
+
+    <div id="referenceContainer">
+
+        <img src="assets/firetruck.png" id="referenceImage">
+
+    </div>
+
+
+
+
+    <!-- Main Puzzle Area -->
+
+    <div id="puzzleArea">
+
+
+        <!-- Completed Puzzle Board -->
+
+        <div id="puzzleBoard">
+
+
+            <!-- 
+                6 fixed jigsaw positions
+                
+                Correct order:
+
+                1  2  3
+
+                4  5  6
+
+            -->
+
+
+            <div class="puzzleSlot" data-position="1"></div>
+
+            <div class="puzzleSlot" data-position="2"></div>
+
+            <div class="puzzleSlot" data-position="3"></div>
+
+
+            <div class="puzzleSlot" data-position="4"></div>
+
+            <div class="puzzleSlot" data-position="5"></div>
+
+            <div class="puzzleSlot" data-position="6"></div>
+
+
+
         </div>
-      </div>
 
-      <div class="tray" id="tray">
-        <div class="piece" data-id="6"><img src="assets/6.png" alt="Puzzle piece 6"></div>
-        <div class="piece" data-id="2"><img src="assets/2.png" alt="Puzzle piece 2"></div>
-        <div class="piece" data-id="4"><img src="assets/4.png" alt="Puzzle piece 4"></div>
-        <div class="piece" data-id="5"><img src="assets/5.png" alt="Puzzle piece 5"></div>
-        <div class="piece" data-id="3"><img src="assets/3.png" alt="Puzzle piece 3"></div>
-        <div class="piece" data-id="1"><img src="assets/1.png" alt="Puzzle piece 1"></div>
-      </div>
+
+
     </div>
 
-    <div class="referenceBox">
-      <div class="refTitle">Look and complete</div>
-      <img src="assets/firetruck.png" alt="Fire truck reference">
+
+
+
+
+    <!-- Puzzle Pieces Tray -->
+
+    <div id="piecesTray">
+
+
+        <!-- 
+            Random starting order:
+            
+            6 2 4 5 3 1
+
+        -->
+
+
+        <div class="piece" draggable="true" data-id="6">
+
+            <img src="assets/6.png">
+
+        </div>
+
+
+
+        <div class="piece" draggable="true" data-id="2">
+
+            <img src="assets/2.png">
+
+        </div>
+
+
+
+
+        <div class="piece" draggable="true" data-id="4">
+
+            <img src="assets/4.png">
+
+        </div>
+
+
+
+
+        <div class="piece" draggable="true" data-id="5">
+
+            <img src="assets/5.png">
+
+        </div>
+
+
+
+
+        <div class="piece" draggable="true" data-id="3">
+
+            <img src="assets/3.png">
+
+        </div>
+
+
+
+
+        <div class="piece" draggable="true" data-id="1">
+
+            <img src="assets/1.png">
+
+        </div>
+
+
     </div>
-  </div>
-</section>
 
-<section id="endSlide" class="slide">
-  <div class="goodJob">Good job!</div>
 
-  <div class="road"></div>
 
-  <svg class="runningTruck" viewBox="0 0 600 300" aria-label="Animated fire truck">
-    <rect x="60" y="130" width="360" height="90" rx="18" fill="#e11d1d" stroke="#7f1d1d" stroke-width="6"/>
-    <path d="M110 80 H280 C315 80 340 105 350 130 H70 C76 105 88 88 110 80Z" fill="#ef2222" stroke="#7f1d1d" stroke-width="6"/>
-    <rect x="125" y="94" width="70" height="52" rx="9" fill="#8de3ff" stroke="#164e63" stroke-width="5"/>
-    <rect x="210" y="94" width="80" height="52" rx="9" fill="#8de3ff" stroke="#164e63" stroke-width="5"/>
-    <rect x="75" y="175" width="335" height="16" fill="#ffffff"/>
-    <rect x="390" y="145" width="95" height="75" rx="8" fill="#d71920" stroke="#7f1d1d" stroke-width="6"/>
-    <rect x="420" y="92" width="40" height="55" rx="8" fill="#ff1f1f" stroke="#7f1d1d" stroke-width="5"/>
-    <rect x="425" y="70" width="30" height="24" rx="12" fill="#ff3b3b"/>
-    <g stroke="#6b7280" stroke-width="9" stroke-linecap="round">
-      <line x1="230" y1="58" x2="500" y2="105"/>
-      <line x1="225" y1="78" x2="495" y2="125"/>
-      <line x1="255" y1="63" x2="280" y2="88"/>
-      <line x1="305" y1="72" x2="330" y2="97"/>
-      <line x1="355" y1="81" x2="380" y2="106"/>
-      <line x1="405" y1="90" x2="430" y2="115"/>
-      <line x1="455" y1="99" x2="480" y2="124"/>
-    </g>
-    <rect x="50" y="207" width="460" height="30" rx="8" fill="#9ca3af"/>
-    <circle cx="150" cy="235" r="42" fill="#111827"/>
-    <circle cx="150" cy="235" r="23" fill="#d1d5db"/>
-    <circle cx="405" cy="235" r="42" fill="#111827"/>
-    <circle cx="405" cy="235" r="23" fill="#d1d5db"/>
-    <rect x="35" y="160" width="35" height="60" rx="8" fill="#cbd5e1"/>
-    <circle cx="85" cy="158" r="13" fill="#fde047"/>
-    <path d="M425 55 L405 25 M445 55 L465 25 M435 50 L435 18" stroke="#ef4444" stroke-width="7" stroke-linecap="round"/>
-  </svg>
 
-  <button class="playAgain" onclick="restartGame()">Play Again</button>
-</section>
+</div>
 
-<div id="feedback" class="feedback"></div>
 
-<audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
-<audio id="clapSound" src="assets/clap.mp3" preload="auto"></audio>
+
+
+
+<!-- ================= FEEDBACK ================= -->
+
+<div id="tickMark">
+
+    ✓
+
+</div>
+
+
+<div id="wrongMark">
+
+    ✖
+
+</div>
+
+
+
+
+
+
+<!-- ================= FINAL SCREEN ================= -->
+
+
+<div id="finalScreen">
+
+
+    <div id="goodJob">
+
+        Good job!
+
+    </div>
+
+
+
+    <!-- Animated SVG fire truck will be added in JS -->
+
+    <div id="runningTruckContainer">
+
+
+    </div>
+
+
+
+
+    <button id="playAgain">
+
+        Play Again
+
+    </button>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- AUDIO -->
+
+<audio id="wrongSound" src="assets/wrong.mp3"></audio>
+
+<audio id="clapSound" src="assets/clap.mp3"></audio>
+
+
 
 <script>
-const splash = document.getElementById("splash");
-const gameSlide = document.getElementById("gameSlide");
-const endSlide = document.getElementById("endSlide");
-const tray = document.getElementById("tray");
-const slots = Array.from(document.querySelectorAll(".slot"));
-const feedback = document.getElementById("feedback");
+
+/* JAVASCRIPT WILL COME IN PART 3 */
+
+
+</script>
+
+
+</body>
+
+</html>
+*{
+    box-sizing:border-box;
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+
+html,body{
+
+    margin:0;
+    padding:0;
+
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+
+    font-family:'Fredoka',Arial,sans-serif;
+
+    background:#fff7df;
+
+    touch-action:none;
+
+}
+
+
+
+
+
+/* ================= SPLASH ================= */
+
+
+#splashScreen{
+
+    position:fixed;
+
+    inset:0;
+
+    background:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+
+#logo{
+
+    width:220px;
+
+    max-width:45vw;
+
+}
+
+
+
+
+
+
+
+/* ================= GAME SCREEN ================= */
+
+
+#gameScreen{
+
+    display:none;
+
+    width:100vw;
+
+    height:100vh;
+
+    height:100svh;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    padding:8px;
+
+}
+
+
+
+
+
+/* ================= INSTRUCTION ================= */
+
+
+#instructionBox{
+
+
+    width:95%;
+
+    max-width:900px;
+
+    background:white;
+
+    border:3px solid #ffb703;
+
+    border-radius:18px;
+
+    padding:8px 15px;
+
+    text-align:center;
+
+    font-size:clamp(16px,2.4vw,28px);
+
+    font-weight:700;
+
+    color:#1d3557;
+
+    box-shadow:0 5px 0 #f59e0b;
+
+
+}
+
+
+
+
+
+
+
+/* ================= REFERENCE IMAGE ================= */
+
+
+#referenceContainer{
+
+
+    margin-top:6px;
+
+
+    width:95%;
+
+    height:13vh;
+
+
+    min-height:70px;
+
+
+    background:white;
+
+    border-radius:16px;
+
+    border:3px solid #60a5fa;
+
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+}
+
+
+#referenceImage{
+
+
+    height:95%;
+
+    width:auto;
+
+    object-fit:contain;
+
+}
+
+
+
+
+
+
+
+/* ================= PUZZLE AREA ================= */
+
+
+#puzzleArea{
+
+
+    width:95%;
+
+
+    flex:1;
+
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+    margin-top:6px;
+
+
+}
+
+
+
+
+
+
+/* Smaller puzzle box */
+
+
+#puzzleBoard{
+
+
+    width:min(75vw,650px);
+
+
+    height:min(42vh,390px);
+
+
+    display:grid;
+
+
+    grid-template-columns:repeat(3,1fr);
+
+    grid-template-rows:repeat(2,1fr);
+
+
+    background:white;
+
+
+    border:3px dashed #64748b;
+
+
+    border-radius:15px;
+
+
+    overflow:hidden;
+
+
+}
+
+
+
+
+
+
+.puzzleSlot{
+
+
+    position:relative;
+
+
+    border:1px dashed #cbd5e1;
+
+
+    background:#f8fafc;
+
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+}
+
+
+
+
+/*
+
+After joining pieces:
+no gaps
+
+*/
+
+
+.puzzleSlot img{
+
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:contain;
+
+    pointer-events:none;
+
+}
+
+
+
+
+
+
+/* ================= PIECE TRAY ================= */
+
+
+#piecesTray{
+
+
+    width:95%;
+
+
+    height:15vh;
+
+
+    min-height:80px;
+
+
+    background:white;
+
+
+    border:3px solid #fb923c;
+
+
+    border-radius:18px;
+
+
+    display:grid;
+
+
+    grid-template-columns:repeat(6,1fr);
+
+
+    gap:6px;
+
+
+    padding:6px;
+
+
+    box-shadow:0 5px 0 #ea580c;
+
+
+}
+
+
+
+
+
+
+.piece{
+
+
+    background:white;
+
+
+    border:2px solid #334155;
+
+
+    border-radius:12px;
+
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+    padding:3px;
+
+
+    cursor:pointer;
+
+
+    transition:.2s;
+
+
+}
+
+
+
+
+
+.piece img{
+
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:contain;
+
+
+}
+
+
+
+
+
+
+.piece.dragging{
+
+
+    position:fixed;
+
+    z-index:2000;
+
+    transform:scale(1.08);
+
+
+    pointer-events:none;
+
+
+}
+
+
+
+
+
+.piece.correctPlaced{
+
+
+    border:none;
+
+    padding:0;
+
+    background:none;
+
+}
+
+
+
+
+
+/* ================= FEEDBACK ================= */
+
+
+#tickMark,
+#wrongMark{
+
+
+    position:fixed;
+
+
+    left:50%;
+
+    top:50%;
+
+
+    transform:translate(-50%,-50%) scale(0);
+
+
+    font-size:120px;
+
+
+    font-weight:bold;
+
+
+    z-index:3000;
+
+
+}
+
+
+
+#tickMark{
+
+    color:#16a34a;
+
+}
+
+
+#wrongMark{
+
+    color:#dc2626;
+
+}
+
+
+
+
+
+.showFeedback{
+
+
+    animation:feedback .8s ease;
+
+
+}
+
+
+
+
+
+@keyframes feedback{
+
+
+0%{
+
+transform:translate(-50%,-50%) scale(0);
+
+}
+
+
+35%{
+
+transform:translate(-50%,-50%) scale(1.3);
+
+}
+
+
+100%{
+
+transform:translate(-50%,-50%) scale(0);
+
+}
+
+
+}
+
+
+
+
+
+
+/* ================= FINAL SCREEN ================= */
+
+
+
+#finalScreen{
+
+
+    display:none;
+
+
+    width:100vw;
+
+    height:100vh;
+
+    height:100svh;
+
+
+    overflow:hidden;
+
+
+    position:relative;
+
+
+    background:linear-gradient(#dff6ff,#fff3c4);
+
+
+}
+
+
+
+
+
+#goodJob{
+
+
+    position:absolute;
+
+
+    top:8vh;
+
+
+    width:100%;
+
+
+    text-align:center;
+
+
+    font-size:clamp(55px,10vw,110px);
+
+
+    color:#e11d48;
+
+
+    font-weight:900;
+
+
+    text-shadow:
+
+    4px 4px white,
+
+    7px 7px #fbbf24;
+
+
+}
+
+
+
+
+#runningTruckContainer{
+
+
+    position:absolute;
+
+
+    bottom:18vh;
+
+
+    width:100%;
+
+
+    height:35vh;
+
+
+    overflow:hidden;
+
+
+}
+
+
+
+
+
+
+.runningTruck{
+
+
+    position:absolute;
+
+
+    right:-45vw;
+
+
+    bottom:0;
+
+
+    width:min(55vw,500px);
+
+
+    animation:truckMove 5s linear infinite;
+
+
+}
+
+
+
+
+
+@keyframes truckMove{
+
+
+0%{
+
+
+right:-55vw;
+
+
+}
+
+
+100%{
+
+
+right:120vw;
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+#playAgain{
+
+
+    position:absolute;
+
+
+    bottom:5vh;
+
+
+    left:50%;
+
+
+    transform:translateX(-50%);
+
+
+    background:#22c55e;
+
+
+    color:white;
+
+
+    border:none;
+
+
+    border-radius:40px;
+
+
+    padding:15px 40px;
+
+
+    font-size:28px;
+
+
+    font-weight:bold;
+
+
+    box-shadow:0 6px 0 #15803d;
+
+
+}
+
+
+
+
+
+
+
+/* ================= MOBILE ================= */
+
+
+@media(max-width:700px){
+
+
+
+#gameScreen{
+
+
+padding:5px;
+
+
+}
+
+
+
+#instructionBox{
+
+
+font-size:15px;
+
+padding:7px;
+
+
+}
+
+
+
+#referenceContainer{
+
+
+height:12vh;
+
+
+}
+
+
+
+#puzzleBoard{
+
+
+width:92vw;
+
+
+height:35vh;
+
+
+}
+
+
+
+#piecesTray{
+
+
+height:17vh;
+
+
+gap:3px;
+
+}
+
+
+
+.piece{
+
+
+border-radius:8px;
+
+}
+
+
+
+
+#goodJob{
+
+
+top:10vh;
+
+
+}
+
+
+
+.runningTruck{
+
+
+width:75vw;
+
+
+}
+
+
+}
+
+
+
+
+
+
+/* landscape phones */
+
+
+@media(max-height:550px){
+
+
+#referenceContainer{
+
+height:10vh;
+
+}
+
+
+#puzzleBoard{
+
+
+height:50vh;
+
+}
+
+
+
+#piecesTray{
+
+
+height:18vh;
+
+}
+
+
+
+}
+/* ================= VARIABLES ================= */
+
+
+const splashScreen = document.getElementById("splashScreen");
+const gameScreen = document.getElementById("gameScreen");
+const finalScreen = document.getElementById("finalScreen");
+
+const pieces = document.querySelectorAll(".piece");
+const slots = document.querySelectorAll(".puzzleSlot");
+
+const tick = document.getElementById("tickMark");
+const cross = document.getElementById("wrongMark");
+
 const wrongSound = document.getElementById("wrongSound");
 const clapSound = document.getElementById("clapSound");
 
-let selectedPiece = null;
-let placedCount = 0;
-let dragPiece = null;
-let dragStartX = 0;
-let dragStartY = 0;
+const runningTruckContainer =
+document.getElementById("runningTruckContainer");
+
+let completed = 0;
+
+let activePiece = null;
+
 let offsetX = 0;
 let offsetY = 0;
-let originalParent = null;
-let originalNext = null;
-let originalRect = null;
-let hasDragged = false;
 
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    splash.style.display = "none";
-    gameSlide.classList.add("active");
-  }, 3000);
+
+
+
+
+
+
+/* ================= SPLASH ================= */
+
+
+window.onload=function(){
+
+
+setTimeout(()=>{
+
+
+splashScreen.style.display="none";
+
+gameScreen.style.display="flex";
+
+
+},3000);
+
+
+};
+
+
+
+
+
+
+
+/* ================= DRAG SYSTEM ================= */
+
+
+
+pieces.forEach(piece=>{
+
+
+piece.addEventListener("pointerdown",startDrag);
+
+
 });
 
-function playAudio(audio) {
-  try {
-    audio.currentTime = 0;
-    audio.play().catch(() => {});
-  } catch (e) {}
+
+
+
+function startDrag(e){
+
+
+if(this.classList.contains("correctPlaced"))
+return;
+
+
+
+activePiece=this;
+
+
+let rect=this.getBoundingClientRect();
+
+
+
+offsetX=e.clientX-rect.left;
+
+offsetY=e.clientY-rect.top;
+
+
+
+this.style.width=rect.width+"px";
+
+this.style.height=rect.height+"px";
+
+
+
+this.classList.add("dragging");
+
+
+
+this.style.left=
+(rect.left)+"px";
+
+
+this.style.top=
+(rect.top)+"px";
+
+
+document.body.appendChild(this);
+
+
+
+document.addEventListener(
+"pointermove",
+dragMove
+);
+
+
+
+document.addEventListener(
+"pointerup",
+dropPiece,
+{once:true}
+);
+
+
+
 }
 
-function showFeedback(type) {
-  feedback.className = "feedback";
-  feedback.textContent = type === "tick" ? "✓" : "✖";
-  feedback.classList.add(type, "show");
 
-  setTimeout(() => {
-    feedback.className = "feedback";
-    feedback.textContent = "";
-  }, 760);
+
+
+
+function dragMove(e){
+
+
+if(!activePiece)
+return;
+
+
+
+activePiece.style.left=
+(e.clientX-offsetX)+"px";
+
+
+activePiece.style.top=
+(e.clientY-offsetY)+"px";
+
+
+
 }
 
-function wrongAction(piece) {
-  playAudio(wrongSound);
-  showFeedback("cross");
 
-  if (piece) {
-    piece.classList.remove("wiggle");
-    void piece.offsetWidth;
-    piece.classList.add("wiggle");
-    setTimeout(() => piece.classList.remove("wiggle"), 380);
-  }
+
+
+
+
+
+
+
+function dropPiece(e){
+
+
+
+document.removeEventListener(
+"pointermove",
+dragMove
+);
+
+
+
+if(!activePiece)
+return;
+
+
+
+
+let placed=false;
+
+
+
+slots.forEach(slot=>{
+
+
+
+let rect=slot.getBoundingClientRect();
+
+
+
+if(
+
+e.clientX>rect.left &&
+e.clientX<rect.right &&
+e.clientY>rect.top &&
+e.clientY<rect.bottom
+
+
+){
+
+
+
+let correct =
+slot.dataset.position;
+
+
+
+let id =
+activePiece.dataset.id;
+
+
+
+if(correct===id){
+
+
+
+snapPiece(activePiece,slot);
+
+
+placed=true;
+
+
+
 }
 
-function correctAction() {
-  showFeedback("tick");
+else{
+
+
+wrongAnswer(activePiece);
+
+
 }
 
-function placePiece(piece, slot) {
-  if (!piece || !slot || piece.classList.contains("placed")) return;
 
-  const id = piece.dataset.id;
-  const correctId = slot.dataset.correct;
 
-  if (slot.children.length > 0) {
-    wrongAction(piece);
-    return;
-  }
-
-  if (id === correctId) {
-    piece.classList.remove("selected", "dragging");
-    piece.classList.add("placed");
-    piece.style.position = "";
-    piece.style.left = "";
-    piece.style.top = "";
-    piece.style.width = "";
-    piece.style.height = "";
-    piece.style.zIndex = "";
-    piece.style.pointerEvents = "";
-    piece.style.transform = "";
-
-    slot.appendChild(piece);
-    selectedPiece = null;
-    placedCount++;
-    correctAction();
-
-    if (placedCount === 6) {
-      setTimeout(completeGame, 900);
-    }
-  } else {
-    wrongAction(piece);
-  }
 }
 
-function completeGame() {
-  playAudio(clapSound);
-  makeConfetti();
-  setTimeout(() => {
-    gameSlide.classList.remove("active");
-    endSlide.classList.add("active");
-  }, 1400);
-}
 
-function makeConfetti() {
-  const colors = ["#ef4444", "#22c55e", "#3b82f6", "#facc15", "#f97316", "#a855f7"];
-  for (let i = 0; i < 70; i++) {
-    const c = document.createElement("div");
-    c.className = "confetti";
-    c.style.left = Math.random() * 100 + "vw";
-    c.style.background = colors[Math.floor(Math.random() * colors.length)];
-    c.style.animationDelay = Math.random() * 0.8 + "s";
-    c.style.transform = "rotate(" + Math.random() * 360 + "deg)";
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 3200);
-  }
-}
-
-function setSelected(piece) {
-  if (!piece || piece.classList.contains("placed")) return;
-
-  document.querySelectorAll(".piece").forEach(p => p.classList.remove("selected"));
-  selectedPiece = piece;
-  piece.classList.add("selected");
-}
-
-function resetDrag(piece) {
-  if (!piece) return;
-
-  piece.classList.remove("dragging");
-  piece.style.position = "";
-  piece.style.left = "";
-  piece.style.top = "";
-  piece.style.width = "";
-  piece.style.height = "";
-  piece.style.zIndex = "";
-  piece.style.pointerEvents = "";
-  piece.style.transform = "";
-
-  if (originalParent && piece.parentNode !== originalParent) {
-    originalParent.insertBefore(piece, originalNext);
-  }
-}
-
-document.querySelectorAll(".piece").forEach(piece => {
-  piece.addEventListener("click", () => {
-    if (!hasDragged) setSelected(piece);
-  });
-
-  piece.addEventListener("pointerdown", e => {
-    if (piece.classList.contains("placed")) return;
-
-    dragPiece = piece;
-    hasDragged = false;
-    originalParent = piece.parentNode;
-    originalNext = piece.nextSibling;
-    originalRect = piece.getBoundingClientRect();
-
-    dragStartX = e.clientX;
-    dragStartY = e.clientY;
-    offsetX = e.clientX - originalRect.left;
-    offsetY = e.clientY - originalRect.top;
-
-    piece.setPointerCapture && piece.setPointerCapture(e.pointerId);
-  });
-
-  piece.addEventListener("pointermove", e => {
-    if (dragPiece !== piece) return;
-
-    const dx = Math.abs(e.clientX - dragStartX);
-    const dy = Math.abs(e.clientY - dragStartY);
-
-    if (!hasDragged && (dx > 5 || dy > 5)) {
-      hasDragged = true;
-      piece.classList.remove("selected");
-      piece.classList.add("dragging");
-      piece.style.width = originalRect.width + "px";
-      piece.style.height = originalRect.height + "px";
-      document.body.appendChild(piece);
-    }
-
-    if (hasDragged) {
-      piece.style.left = (e.clientX - offsetX) + "px";
-      piece.style.top = (e.clientY - offsetY) + "px";
-    }
-  });
-
-  piece.addEventListener("pointerup", e => {
-    if (dragPiece !== piece) return;
-
-    if (hasDragged) {
-      piece.style.pointerEvents = "none";
-      const target = document.elementFromPoint(e.clientX, e.clientY);
-      piece.style.pointerEvents = "";
-
-      const slot = target ? target.closest(".slot") : null;
-
-      if (slot) {
-        placePiece(piece, slot);
-        if (!piece.classList.contains("placed")) {
-          resetDrag(piece);
-        }
-      } else {
-        resetDrag(piece);
-      }
-
-      setTimeout(() => {
-        hasDragged = false;
-      }, 50);
-    }
-
-    dragPiece = null;
-  });
-
-  piece.addEventListener("pointercancel", () => {
-    if (dragPiece === piece) {
-      resetDrag(piece);
-      dragPiece = null;
-    }
-  });
 });
 
-slots.forEach(slot => {
-  slot.addEventListener("click", () => {
-    if (selectedPiece) {
-      placePiece(selectedPiece, slot);
-    }
-  });
 
-  slot.addEventListener("pointerenter", () => {
-    slot.classList.add("hover");
-  });
 
-  slot.addEventListener("pointerleave", () => {
-    slot.classList.remove("hover");
-  });
-});
 
-function restartGame() {
-  placedCount = 0;
-  selectedPiece = null;
-  dragPiece = null;
-  hasDragged = false;
+if(!placed){
 
-  slots.forEach(slot => {
-    const piece = slot.querySelector(".piece");
-    if (piece) {
-      piece.className = "piece";
-      piece.style.cssText = "";
-      tray.appendChild(piece);
-    }
-  });
 
-  const order = ["6", "2", "4", "5", "3", "1"];
-  order.forEach(id => {
-    const p = tray.querySelector('.piece[data-id="' + id + '"]');
-    if (p) tray.appendChild(p);
-  });
+resetPiece(activePiece);
 
-  endSlide.classList.remove("active");
-  gameSlide.classList.add("active");
+
 }
-</script>
 
-</body>
-</html>
+
+
+activePiece=null;
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ================= SNAP PIECE ================= */
+
+
+
+function snapPiece(piece,slot){
+
+
+
+piece.classList.remove("dragging");
+
+
+piece.classList.add("correctPlaced");
+
+
+
+piece.style.position="relative";
+
+piece.style.left="0";
+
+piece.style.top="0";
+
+piece.style.width="100%";
+
+piece.style.height="100%";
+
+
+
+slot.appendChild(piece);
+
+
+
+showTick();
+
+
+
+completed++;
+
+
+
+if(completed===6){
+
+
+setTimeout(finishGame,900);
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+/* ================= WRONG ================= */
+
+
+
+function wrongAnswer(piece){
+
+
+
+try{
+
+wrongSound.currentTime=0;
+
+wrongSound.play();
+
+}
+
+catch(e){}
+
+
+
+showCross();
+
+
+
+piece.animate(
+
+[
+
+{transform:"translateX(0)"},
+
+{transform:"translateX(-12px)"},
+
+{transform:"translateX(12px)"},
+
+{transform:"translateX(0)"}
+
+],
+
+{
+
+duration:350
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function resetPiece(piece){
+
+
+piece.classList.remove("dragging");
+
+
+piece.style.position="";
+
+piece.style.left="";
+
+piece.style.top="";
+
+piece.style.width="";
+
+piece.style.height="";
+
+
+
+document.getElementById(
+"piecesTray"
+).appendChild(piece);
+
+
+
+}
+
+
+
+
+
+
+
+
+/* ================= FEEDBACK ================= */
+
+
+
+function showTick(){
+
+
+tick.classList.remove("showFeedback");
+
+void tick.offsetWidth;
+
+tick.classList.add("showFeedback");
+
+
+}
+
+
+
+
+function showCross(){
+
+
+cross.classList.remove("showFeedback");
+
+void cross.offsetWidth;
+
+cross.classList.add("showFeedback");
+
+
+}
+
+
+
+
+
+
+
+/* ================= COMPLETE ================= */
+
+
+
+function finishGame(){
+
+
+
+try{
+
+clapSound.currentTime=0;
+
+clapSound.play();
+
+}
+
+catch(e){}
+
+
+
+
+createConfetti();
+
+
+
+setTimeout(()=>{
+
+
+gameScreen.style.display="none";
+
+
+finalScreen.style.display="block";
+
+
+createRunningTruck();
+
+
+
+},1200);
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ================= CONFETTI ================= */
+
+
+
+function createConfetti(){
+
+
+for(let i=0;i<80;i++){
+
+
+let c=document.createElement("div");
+
+
+c.style.position="fixed";
+
+c.style.width="12px";
+
+c.style.height="18px";
+
+c.style.top="-20px";
+
+c.style.left=Math.random()*100+"vw";
+
+
+c.style.background=
+
+[
+
+"#ef4444",
+
+"#22c55e",
+
+"#3b82f6",
+
+"#facc15",
+
+"#f97316",
+
+"#a855f7"
+
+]
+
+[Math.floor(Math.random()*6)];
+
+
+
+c.style.zIndex="5000";
+
+
+
+c.animate(
+
+[
+
+{
+transform:"translateY(0) rotate(0deg)"
+},
+
+{
+transform:
+`translateY(110vh) rotate(720deg)`
+}
+
+],
+
+{
+
+duration:2200,
+
+delay:Math.random()*800
+
+}
+
+);
+
+
+
+document.body.appendChild(c);
+
+
+
+setTimeout(()=>{
+
+c.remove();
+
+},3000);
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ================= FINAL SVG FIRE TRUCK ================= */
+
+
+
+function createRunningTruck(){
+
+
+
+runningTruckContainer.innerHTML=`
+
+
+<svg class="runningTruck"
+viewBox="0 0 600 300">
+
+
+<rect x="80" y="130"
+width="360"
+height="100"
+rx="20"
+fill="#ef1b1b"
+stroke="#7f1d1d"
+stroke-width="6"/>
+
+
+
+<rect x="150"
+y="85"
+width="120"
+height="70"
+rx="15"
+fill="#8ed8ff"
+stroke="#1e3a8a"
+stroke-width="5"/>
+
+
+
+<rect x="285"
+y="85"
+width="110"
+height="70"
+rx="15"
+fill="#8ed8ff"
+stroke="#1e3a8a"
+stroke-width="5"/>
+
+
+
+<rect x="80"
+y="175"
+width="360"
+height="15"
+fill="white"/>
+
+
+
+
+<rect x="420"
+y="150"
+width="80"
+height="80"
+rx="12"
+fill="#dc2626"
+stroke="#7f1d1d"
+stroke-width="5"/>
+
+
+
+<!-- ladder -->
+
+<line x1="260"
+y1="55"
+x2="520"
+y2="95"
+stroke="#64748b"
+stroke-width="10"/>
+
+<line x1="250"
+y1="75"
+x2="510"
+y2="115"
+stroke="#64748b"
+stroke-width="10"/>
+
+
+<line x1="300"
+y1="62"
+x2="320"
+y2="90"
+stroke="#64748b"
+stroke-width="8"/>
+
+<line x1="360"
+y1="72"
+x2="380"
+y2="100"
+stroke="#64748b"
+stroke-width="8"/>
+
+<line x1="420"
+y1="82"
+x2="440"
+y2="110"
+stroke="#64748b"
+stroke-width="8"/>
+
+
+
+
+
+<!-- wheels -->
+
+<circle cx="170"
+cy="240"
+r="45"
+fill="#111827"/>
+
+
+<circle cx="170"
+cy="240"
+r="22"
+fill="#d1d5db"/>
+
+
+
+<circle cx="400"
+cy="240"
+r="45"
+fill="#111827"/>
+
+
+<circle cx="400"
+cy="240"
+r="22"
+fill="#d1d5db"/>
+
+
+
+
+<!-- siren -->
+
+
+<rect x="210"
+y="45"
+width="45"
+height="35"
+rx="15"
+fill="#ef4444"/>
+
+
+</svg>
+
+
+
+`;
+
+
+
+}
+
+
+
+
+
+
+
+/* ================= PLAY AGAIN ================= */
+
+
+
+document.getElementById("playAgain")
+.onclick=function(){
+
+
+
+location.reload();
+
+
+};
