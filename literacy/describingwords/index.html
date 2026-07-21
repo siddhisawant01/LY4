@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+
+<title>Describing Words Game</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+overflow:hidden;
+background:#fff;
+}
+
+.slide{
+
+position:absolute;
+width:100%;
+height:100vh;
+
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+
+background:url("assets/background.png") center center/cover no-repeat;
+
+padding:20px;
+}
+
+.active{
+display:flex;
+}
+
+.logoSlide{
+
+background:white;
+}
+
+.logoSlide img{
+
+width:280px;
+max-width:70%;
+
+}
+
+.instruction{
+
+font-size:clamp(20px,2.8vw,34px);
+font-weight:bold;
+color:#004080;
+margin-bottom:25px;
+text-align:center;
+
+}
+
+.sentence{
+
+display:flex;
+align-items:center;
+justify-content:center;
+flex-wrap:wrap;
+gap:10px;
+
+font-size:clamp(24px,3vw,40px);
+font-weight:bold;
+text-align:center;
+
+}
+
+.blank{
+
+display:inline-flex;
+justify-content:center;
+align-items:center;
+
+width:180px;
+height:60px;
+
+border-bottom:5px solid #333;
+
+font-size:34px;
+color:#d60000;
+
+}
+
+.pic{
+
+width:110px;
+height:110px;
+object-fit:contain;
+
+}
+
+.options{
+
+margin-top:45px;
+
+display:flex;
+gap:25px;
+flex-wrap:wrap;
+justify-content:center;
+
+}
+
+.option{
+
+background:white;
+
+border:4px solid #2196F3;
+
+padding:16px 28px;
+
+border-radius:18px;
+
+font-size:30px;
+font-weight:bold;
+
+cursor:pointer;
+user-select:none;
+transition:.2s;
+
+}
+
+.option:hover{
+
+transform:scale(1.08);
+
+}
+
+.feedback{
+
+position:absolute;
+
+font-size:140px;
+
+display:none;
+
+animation:pop .6s;
+
+}
+
+@keyframes pop{
+
+0%{transform:scale(.2);}
+60%{transform:scale(1.4);}
+100%{transform:scale(1);}
+
+}
+
+.final{
+
+background:white;
+overflow:hidden;
+
+}
+
+.good{
+
+font-size:70px;
+font-weight:bold;
+color:#ff1493;
+position:relative;
+z-index:5;
+}
+
+.rain{
+
+position:absolute;
+top:-60px;
+font-size:42px;
+font-weight:bold;
+animation:fall linear infinite;
+}
+
+@keyframes fall{
+
+0%{
+transform:translateY(-100px) rotate(0deg);
+}
+
+100%{
+
+transform:translateY(120vh) rotate(360deg);
+
+}
+
+}
+
+@media(max-width:700px){
+
+.pic{
+width:80px;
+height:80px;
+}
+
+.blank{
+
+width:120px;
+height:45px;
+font-size:24px;
+
+}
+
+.option{
+
+font-size:22px;
+padding:14px 18px;
+
+}
+
+.feedback{
+
+font-size:90px;
+
+}
+
+.good{
+
+font-size:45px;
+
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<audio id="correctAudio" src="assets/clap.mp3"></audio>
+<audio id="wrongAudio" src="assets/wrong.mp3"></audio>
+
+<!-- LOGO -->
+
+<div class="slide active logoSlide" id="logo">
+
+<img src="assets/innovine-logo.png">
+
+</div>
+
+<div id="game"></div>
+
+<div class="slide final" id="end">
+
+<div class="good">Good Job!</div>
+
+</div>
+
+<script>
+
+const questions=[
+
+{
+text:["The lemon is ",""],
+image:"lemon.png",
+options:["sour","hot","sweet"],
+answer:"sour"
+},
+
+{
+text:["The ant is very ",""],
+image:"ant.png",
+options:["tall","small","big"],
+answer:"small"
+},
+
+{
+text:["The candy is ",""],
+image:"candy.png",
+options:["fast","slow","sweet"],
+answer:"sweet"
+},
+
+{
+text:["The sky is ",""],
+image:"sky.png",
+options:["blue","pink","red"],
+answer:"blue"
+},
+
+{
+text:["The giraffe is ",""],
+image:"giraffe.png",
+options:["short","tall","small"],
+answer:"tall"
+},
+
+{
+text:["The soup is very ",""],
+image:"soup.png",
+options:["slow","cold","hot"],
+answer:"hot"
+},
+
+{
+text:["The apple is ",""],
+image:"apple.png",
+options:["red","blue","black"],
+answer:"red"
+},
+
+{
+text:["The ball is ",""],
+image:"ball.png",
+options:["square","round","hard"],
+answer:"round"
+}
+
+];
+
+const game=document.getElementById("game");
+
+questions.forEach((q,i)=>{
+
+let slide=document.createElement("div");
+slide.className="slide";
+slide.id="slide"+i;
+
+slide.innerHTML=`
+
+<div class="instruction">
+Tap on the correct describing word to complete the sentence
+</div>
+
+<div class="sentence">
+
+<span>${q.text[0]}</span>
+
+<div class="blank" id="blank${i}"></div>
+
+<img class="pic" src="assets/${q.image}">
+
+</div>
+
+<div class="options" id="opt${i}"></div>
+
+<div class="feedback" id="feed${i}"></div>
+
+`;
+
+game.appendChild(slide);
+
+const optionBox=slide.querySelector(".options");
+
+q.options.forEach(word=>{
+
+let b=document.createElement("div");
+b.className="option";
+b.innerHTML=word;
+
+b.onclick=function(){
+
+if(word===q.answer){
+
+document.getElementById("correctAudio").play();
+
+document.getElementById("blank"+i).innerHTML=word;
+
+b.remove();
+
+let f=document.getElementById("feed"+i);
+
+f.innerHTML="✔";
+f.style.color="green";
+f.style.display="block";
+
+setTimeout(()=>{
+
+f.style.display="none";
+
+slide.classList.remove("active");
+
+if(i<questions.length-1){
+
+document.getElementById("slide"+(i+1)).classList.add("active");
+
+}else{
+
+document.getElementById("end").classList.add("active");
+
+celebrate();
+
+}
+
+},1500);
+
+}else{
+
+document.getElementById("wrongAudio").currentTime=0;
+document.getElementById("wrongAudio").play();
+
+let f=document.getElementById("feed"+i);
+
+f.innerHTML="✖";
+f.style.color="red";
+f.style.display="block";
+
+setTimeout(()=>{
+
+f.style.display="none";
+
+},700);
+
+}
+
+};
+
+optionBox.appendChild(b);
+
+});
+
+});
+
+setTimeout(()=>{
+
+document.getElementById("logo").classList.remove("active");
+
+document.getElementById("slide0").classList.add("active");
+
+},2500);
+
+function celebrate(){
+
+const end=document.getElementById("end");
+
+const colors=["red","blue","green","orange","purple","deeppink"];
+
+for(let i=0;i<120;i++){
+
+let c=document.createElement("div");
+
+c.className="rain";
+
+c.innerHTML="GOOD JOB!";
+
+c.style.left=Math.random()*100+"vw";
+
+c.style.animationDuration=(3+Math.random()*4)+"s";
+
+c.style.color=colors[Math.floor(Math.random()*colors.length)];
+
+c.style.fontSize=(18+Math.random()*20)+"px";
+
+c.style.animationDelay=Math.random()*3+"s";
+
+end.appendChild(c);
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
