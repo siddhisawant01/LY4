@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Descending Order Game</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #ffffff;
+            touch-action: manipulation;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        #game {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        /* ---------------- SPLASH SLIDE ---------------- */
+
+        #splashSlide {
+            position: absolute;
+            inset: 0;
+            z-index: 20;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #ffffff;
+            transition: opacity 0.45s ease;
+        }
+
+        #splashSlide.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #splashLogo {
+            display: block;
+            width: min(58vw, 330px);
+            max-height: 55vh;
+            object-fit: contain;
+        }
+
+        /* ---------------- ACTIVITY SLIDES ---------------- */
+
+        #activitySlide {
+            position: absolute;
+            inset: 0;
+
+            display: none;
+            flex-direction: column;
+            align-items: center;
+
+            overflow: hidden;
+
+            background-image:
+                linear-gradient(
+                    rgba(255, 255, 255, 0.08),
+                    rgba(255, 255, 255, 0.08)
+                ),
+                url("assets/background.png");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        #activitySlide.visible {
+            display: flex;
+        }
+
+        .top-panel {
+            width: min(96%, 960px);
+            flex: 0 0 auto;
+
+            margin-top: max(8px, env(safe-area-inset-top));
+            padding: clamp(8px, 1.4vh, 15px)
+                     clamp(10px, 2vw, 22px);
+
+            text-align: center;
+
+            background: rgba(255, 255, 255, 0.94);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            border-radius: 18px;
+
+            box-shadow: 0 5px 14px rgba(38, 66, 104, 0.18);
+        }
+
+        #instruction {
+            margin: 0;
+            color: #263b63;
+            font-size: clamp(16px, 2.5vw, 27px);
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        #instruction strong {
+            color: #d9487d;
+        }
+
+        .progress-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+
+            margin-top: clamp(5px, 1vh, 9px);
+        }
+
+        .progress-dot {
+            width: clamp(8px, 1.5vw, 13px);
+            height: clamp(8px, 1.5vw, 13px);
+            border-radius: 50%;
+
+            background: #d6dcea;
+            border: 1px solid rgba(37, 56, 91, 0.18);
+        }
+
+        .progress-dot.completed {
+            background: #37bc72;
+        }
+
+        .progress-dot.current {
+            background: #ffb62e;
+            transform: scale(1.25);
+        }
+
+        .play-area {
+            position: relative;
+
+            width: min(96%, 900px);
+            flex: 1 1 auto;
+            min-height: 0;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+
+            padding:
+                clamp(7px, 1.5vh, 14px)
+                clamp(6px, 1.4vw, 14px)
+                max(8px, env(safe-area-inset-bottom));
+        }
+
+        .round-label {
+            flex: 0 0 auto;
+
+            padding: 6px 18px;
+            border-radius: 999px;
+
+            background: rgba(255, 255, 255, 0.94);
+            color: #3a4f72;
+
+            font-size: clamp(14px, 2vw, 20px);
+            font-weight: 800;
+
+            box-shadow: 0 4px 10px rgba(45, 66, 105, 0.16);
+        }
+
+        .answer-area {
+            width: 100%;
+            flex: 0 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(7px, 2vw, 18px);
+        }
+
+        .answer-slot {
+            width: clamp(54px, 12vw, 105px);
+            height: clamp(54px, 12vw, 105px);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: clamp(3px, 0.55vw, 5px) dashed #8ba5d4;
+            border-radius: 19px;
+
+            background: rgba(255, 255, 255, 0.83);
+            color: #263b63;
+
+            font-size: clamp(25px, 5.2vw, 48px);
+            font-weight: 900;
+
+            box-shadow: inset 0 3px 8px rgba(42, 62, 100, 0.08);
+        }
+
+        .answer-slot.filled {
+            border-style: solid;
+            border-color: #4ebc79;
+            background: #eafff0;
+            animation: slotPop 0.28s ease;
+        }
+
+        @keyframes slotPop {
+            0% {
+                transform: scale(0.8);
+            }
+
+            75% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        #hintBox {
+            min-height: clamp(28px, 5vh, 48px);
+            width: min(92%, 590px);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 5px 10px;
+
+            color: #6c3d00;
+            font-size: clamp(15px, 2.3vw, 22px);
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .number-options {
+            width: 100%;
+            flex: 0 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(9px, 2.4vw, 23px);
+        }
+
+        .number-card {
+            position: relative;
+
+            width: clamp(60px, 14vw, 118px);
+            height: clamp(60px, 14vw, 118px);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0;
+            padding: 0;
+
+            border: clamp(3px, 0.5vw, 5px) solid #ffffff;
+            border-radius: 24px;
+
+            background: linear-gradient(145deg, #fff8b4, #ffc85b);
+            color: #4d3673;
+
+            font-size: clamp(29px, 6vw, 56px);
+            font-weight: 900;
+
+            box-shadow:
+                0 7px 0 #db9140,
+                0 12px 18px rgba(43, 55, 93, 0.22);
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                opacity 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .number-card:nth-child(2) {
+            background: linear-gradient(145deg, #d7f6ff, #7ed8ef);
+            box-shadow:
+                0 7px 0 #3fa6c3,
+                0 12px 18px rgba(43, 55, 93, 0.22);
+        }
+
+        .number-card:nth-child(3) {
+            background: linear-gradient(145deg, #ffdcec, #ff8dbd);
+            box-shadow:
+                0 7px 0 #d95c8d,
+                0 12px 18px rgba(43, 55, 93, 0.22);
+        }
+
+        .number-card:nth-child(4) {
+            background: linear-gradient(145deg, #dfffd8, #8ee781);
+            box-shadow:
+                0 7px 0 #4aae54,
+                0 12px 18px rgba(43, 55, 93, 0.22);
+        }
+
+        .number-card:active {
+            transform: translateY(5px) scale(0.97);
+            box-shadow:
+                0 2px 0 #b87631,
+                0 5px 9px rgba(43, 55, 93, 0.18);
+        }
+
+        .number-card.used {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.55);
+        }
+
+        .number-card.wrong {
+            animation: jiggle 0.42s ease;
+        }
+
+        @keyframes jiggle {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-10px) rotate(-4deg);
+            }
+
+            40% {
+                transform: translateX(10px) rotate(4deg);
+            }
+
+            60% {
+                transform: translateX(-7px) rotate(-3deg);
+            }
+
+            80% {
+                transform: translateX(7px) rotate(3deg);
+            }
+        }
+
+        .number-card.hint {
+            animation: hintGlow 0.85s ease-in-out infinite alternate;
+        }
+
+        @keyframes hintGlow {
+            from {
+                transform: scale(1);
+                outline: 3px solid rgba(255, 255, 255, 0.25);
+            }
+
+            to {
+                transform: scale(1.1);
+                outline: 7px solid rgba(255, 242, 60, 0.95);
+                box-shadow:
+                    0 0 22px rgba(255, 239, 43, 0.95),
+                    0 7px 0 #d28c31;
+            }
+        }
+
+        /* ---------------- FEEDBACK ---------------- */
+
+        #feedback {
+            position: fixed;
+            left: 50%;
+            top: 51%;
+
+            z-index: 50;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            width: clamp(82px, 17vw, 145px);
+            height: clamp(82px, 17vw, 145px);
+
+            border-radius: 50%;
+
+            color: #ffffff;
+            font-size: clamp(55px, 12vw, 105px);
+            font-weight: 900;
+            line-height: 1;
+
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        #feedback.show {
+            display: flex;
+            animation: feedbackPop 0.6s ease;
+        }
+
+        #feedback.correct {
+            background: #2fc36c;
+            border: 7px solid #ffffff;
+            box-shadow:
+                0 0 0 6px rgba(47, 195, 108, 0.25),
+                0 8px 24px rgba(21, 97, 55, 0.35);
+        }
+
+        #feedback.incorrect {
+            background: #ec4c4c;
+            border: 7px solid #ffffff;
+            box-shadow:
+                0 0 0 6px rgba(236, 76, 76, 0.25),
+                0 8px 24px rgba(120, 28, 28, 0.32);
+        }
+
+        @keyframes feedbackPop {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.4);
+            }
+
+            60% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.15);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* ---------------- FINAL SLIDE ---------------- */
+
+        #finalSlide {
+            position: absolute;
+            inset: 0;
+            z-index: 30;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+
+            overflow: hidden;
+
+            background:
+                radial-gradient(circle at top left, #fff9c4 0, transparent 34%),
+                radial-gradient(circle at bottom right, #ffd8ef 0, transparent 38%),
+                linear-gradient(145deg, #d8f7ff, #fff4c9);
+        }
+
+        #finalSlide.visible {
+            display: flex;
+        }
+
+        .final-card {
+            position: relative;
+            z-index: 4;
+
+            width: min(88%, 650px);
+            padding: clamp(25px, 5vh, 52px)
+                     clamp(20px, 5vw, 55px);
+
+            text-align: center;
+
+            background: rgba(255, 255, 255, 0.93);
+            border: 5px solid #ffffff;
+            border-radius: 34px;
+
+            box-shadow: 0 15px 35px rgba(49, 71, 111, 0.23);
+
+            animation: finalPop 0.65s ease;
+        }
+
+        @keyframes finalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.65);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        #excellentText {
+            margin: 0 0 clamp(18px, 4vh, 32px);
+
+            color: #e3448b;
+            font-size: clamp(45px, 11vw, 92px);
+            font-weight: 900;
+            line-height: 1;
+
+            text-shadow:
+                0 4px 0 #ffffff,
+                0 7px 0 rgba(130, 48, 102, 0.17);
+        }
+
+        #playAgainButton {
+            min-width: 180px;
+            min-height: 54px;
+
+            padding: 13px 28px;
+
+            border: 4px solid #ffffff;
+            border-radius: 999px;
+
+            background: linear-gradient(145deg, #53d88b, #20ad65);
+            color: #ffffff;
+
+            font-size: clamp(18px, 3vw, 25px);
+            font-weight: 900;
+
+            box-shadow:
+                0 7px 0 #16804a,
+                0 11px 18px rgba(31, 109, 71, 0.25);
+
+            cursor: pointer;
+        }
+
+        #playAgainButton:active {
+            transform: translateY(5px);
+            box-shadow:
+                0 2px 0 #16804a,
+                0 5px 9px rgba(31, 109, 71, 0.22);
+        }
+
+        #numberRain {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .rain-number {
+            position: absolute;
+            top: -15vh;
+
+            font-weight: 900;
+            line-height: 1;
+
+            animation-name: numberFall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes numberFall {
+            0% {
+                transform: translateY(-15vh) rotate(0deg);
+            }
+
+            100% {
+                transform: translateY(125vh) rotate(540deg);
+            }
+        }
+
+        /* ---------------- SMALL HEIGHT DEVICES ---------------- */
+
+        @media (max-height: 550px) {
+            .top-panel {
+                margin-top: 5px;
+                padding: 6px 10px;
+                border-radius: 14px;
+            }
+
+            #instruction {
+                font-size: clamp(14px, 3.4vh, 19px);
+            }
+
+            .progress-row {
+                margin-top: 4px;
+            }
+
+            .play-area {
+                padding-top: 5px;
+                padding-bottom: 6px;
+            }
+
+            .round-label {
+                padding: 4px 14px;
+                font-size: clamp(12px, 3.2vh, 16px);
+            }
+
+            .answer-slot {
+                width: clamp(48px, 12vh, 75px);
+                height: clamp(48px, 12vh, 75px);
+                font-size: clamp(23px, 7vh, 38px);
+            }
+
+            .number-card {
+                width: clamp(54px, 15vh, 82px);
+                height: clamp(54px, 15vh, 82px);
+                font-size: clamp(26px, 8vh, 43px);
+                border-radius: 18px;
+            }
+
+            #hintBox {
+                min-height: 23px;
+                font-size: clamp(13px, 3.5vh, 17px);
+            }
+        }
+
+        /* ---------------- NARROW MOBILE DEVICES ---------------- */
+
+        @media (max-width: 430px) {
+            .top-panel {
+                width: 95%;
+            }
+
+            #instruction {
+                font-size: clamp(15px, 4.1vw, 19px);
+            }
+
+            .answer-area,
+            .number-options {
+                gap: clamp(6px, 2.2vw, 10px);
+            }
+
+            .answer-slot {
+                width: clamp(52px, 19vw, 76px);
+                height: clamp(52px, 19vw, 76px);
+                border-radius: 15px;
+            }
+
+            .number-card {
+                width: clamp(57px, 20vw, 80px);
+                height: clamp(57px, 20vw, 80px);
+                border-radius: 18px;
+            }
+        }
+
+        /* ---------------- LANDSCAPE MOBILE ---------------- */
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            .top-panel {
+                width: 97%;
+            }
+
+            .play-area {
+                width: 96%;
+            }
+
+            .answer-slot {
+                width: clamp(50px, 15vh, 70px);
+                height: clamp(50px, 15vh, 70px);
+            }
+
+            .number-card {
+                width: clamp(55px, 17vh, 78px);
+                height: clamp(55px, 17vh, 78px);
+            }
+
+            #hintBox {
+                min-height: 20px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <!-- Slide 1: Innovine logo only -->
+    <section id="splashSlide">
+        <img
+            id="splashLogo"
+            src="assets/innovine-logo.png"
+            alt="Innovine"
+            draggable="false"
+        >
+    </section>
+
+    <!-- Slides 2 to 9 -->
+    <section id="activitySlide">
+
+        <div class="top-panel">
+            <p id="instruction">
+                Arrange the numbers in <strong>descending order</strong>.
+            </p>
+
+            <div
+                id="progressRow"
+                class="progress-row"
+                aria-label="Game progress"
+            ></div>
+        </div>
+
+        <main class="play-area">
+
+            <div id="roundLabel" class="round-label">
+                Round 1 of 8
+            </div>
+
+            <div
+                id="answerArea"
+                class="answer-area"
+                aria-label="Descending order answer spaces"
+            ></div>
+
+            <div
+                id="hintBox"
+                aria-live="polite"
+            ></div>
+
+            <div
+                id="numberOptions"
+                class="number-options"
+                aria-label="Number choices"
+            ></div>
+
+        </main>
+    </section>
+
+    <!-- Slide 10 -->
+    <section id="finalSlide">
+
+        <div id="numberRain"></div>
+
+        <div class="final-card">
+            <h1 id="excellentText">Excellent!</h1>
+
+            <button
+                id="playAgainButton"
+                type="button"
+            >
+                Play Again
+            </button>
+        </div>
+
+    </section>
+
+    <!-- Correct and incorrect feedback -->
+    <div
+        id="feedback"
+        role="status"
+        aria-live="assertive"
+    ></div>
+
+    <!-- Audio files -->
+    <audio
+        id="wrongAudio"
+        src="assets/wrong.mp3"
+        preload="auto"
+    ></audio>
+
+    <audio
+        id="clapAudio"
+        src="assets/clap.mp3"
+        preload="auto"
+    ></audio>
+
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    /*
+       Eight activity rounds:
+       Slide 2 to Slide 9
+    */
+    var originalQuestions = [
+        [3, 9, 5, 7],
+        [10, 4, 8, 6],
+        [1, 6, 3, 9],
+        [7, 2, 10, 5],
+        [4, 1, 8, 3],
+        [9, 2, 6, 4],
+        [5, 10, 1, 7],
+        [8, 6, 2, 3]
+    ];
+
+    var questions = [];
+    var currentRound = 0;
+    var correctOrder = [];
+    var currentPosition = 0;
+    var wrongAttempts = 0;
+    var inputLocked = false;
+    var feedbackTimer = null;
+    var nextRoundTimer = null;
+
+    var splashSlide = document.getElementById("splashSlide");
+    var activitySlide = document.getElementById("activitySlide");
+    var finalSlide = document.getElementById("finalSlide");
+
+    var roundLabel = document.getElementById("roundLabel");
+    var answerArea = document.getElementById("answerArea");
+    var numberOptions = document.getElementById("numberOptions");
+    var hintBox = document.getElementById("hintBox");
+    var progressRow = document.getElementById("progressRow");
+    var feedback = document.getElementById("feedback");
+    var playAgainButton = document.getElementById("playAgainButton");
+    var numberRain = document.getElementById("numberRain");
+
+    var wrongAudio = document.getElementById("wrongAudio");
+    var clapAudio = document.getElementById("clapAudio");
+
+    function shuffleArray(array) {
+        var copy = array.slice();
+        var i;
+        var j;
+        var temp;
+
+        for (i = copy.length - 1; i > 0; i--) {
+            j = Math.floor(Math.random() * (i + 1));
+
+            temp = copy[i];
+            copy[i] = copy[j];
+            copy[j] = temp;
+        }
+
+        return copy;
+    }
+
+    function prepareQuestions() {
+        questions = [];
+
+        var shuffledRounds = shuffleArray(originalQuestions);
+
+        for (var i = 0; i < shuffledRounds.length; i++) {
+            questions.push(shuffledRounds[i].slice());
+        }
+    }
+
+    function safelyPlay(audioElement) {
+        if (!audioElement) {
+            return;
+        }
+
+        try {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+
+            var playPromise = audioElement.play();
+
+            if (
+                playPromise &&
+                typeof playPromise.catch === "function"
+            ) {
+                playPromise.catch(function () {
+                    /* Audio may be blocked until the learner taps. */
+                });
+            }
+        } catch (error) {
+            /* Keep the game working even if audio is unavailable. */
+        }
+    }
+
+    function startGame() {
+        clearTimeout(feedbackTimer);
+        clearTimeout(nextRoundTimer);
+
+        prepareQuestions();
+
+        currentRound = 0;
+        currentPosition = 0;
+        wrongAttempts = 0;
+        inputLocked = false;
+
+        hideFeedback();
+
+        splashSlide.style.display = "none";
+        finalSlide.className = "";
+        activitySlide.className = "visible";
+
+        createProgressDots();
+        loadRound();
+    }
+
+    function createProgressDots() {
+        progressRow.innerHTML = "";
+
+        for (var i = 0; i < questions.length; i++) {
+            var dot = document.createElement("span");
+            dot.className = "progress-dot";
+            progressRow.appendChild(dot);
+        }
+    }
+
+    function updateProgressDots() {
+        var dots = progressRow.getElementsByClassName("progress-dot");
+
+        for (var i = 0; i < dots.length; i++) {
+            dots[i].className = "progress-dot";
+
+            if (i < currentRound) {
+                dots[i].className += " completed";
+            } else if (i === currentRound) {
+                dots[i].className += " current";
+            }
+        }
+    }
+
+    function loadRound() {
+        inputLocked = false;
+        currentPosition = 0;
+        wrongAttempts = 0;
+
+        hintBox.textContent = "";
+
+        roundLabel.textContent =
+            "Round " +
+            (currentRound + 1) +
+            " of " +
+            questions.length;
+
+        updateProgressDots();
+
+        var questionNumbers = shuffleArray(questions[currentRound]);
+
+        correctOrder = questionNumbers.slice().sort(function (a, b) {
+            return b - a;
+        });
+
+        createAnswerSlots();
+        createNumberCards(questionNumbers);
+    }
+
+    function createAnswerSlots() {
+        answerArea.innerHTML = "";
+
+        for (var i = 0; i < 4; i++) {
+            var slot = document.createElement("div");
+            slot.className = "answer-slot";
+            slot.setAttribute(
+                "aria-label",
+                "Answer position " + (i + 1)
+            );
+
+            answerArea.appendChild(slot);
+        }
+    }
+
+    function createNumberCards(numbers) {
+        numberOptions.innerHTML = "";
+
+        for (var i = 0; i < numbers.length; i++) {
+            var card = document.createElement("button");
+
+            card.type = "button";
+            card.className = "number-card";
+            card.textContent = numbers[i];
+            card.setAttribute(
+                "aria-label",
+                "Number " + numbers[i]
+            );
+
+            card.onclick = createCardHandler(
+                card,
+                numbers[i]
+            );
+
+            numberOptions.appendChild(card);
+        }
+    }
+
+    function createCardHandler(card, number) {
+        return function () {
+            selectNumber(card, number);
+        };
+    }
+
+    function selectNumber(card, number) {
+        if (
+            inputLocked ||
+            card.className.indexOf("used") !== -1
+        ) {
+            return;
+        }
+
+        var expectedNumber = correctOrder[currentPosition];
+
+        if (number === expectedNumber) {
+            handleCorrectChoice(card, number);
+        } else {
+            handleWrongChoice(card);
+        }
+    }
+
+    function handleCorrectChoice(card, number) {
+        clearHintHighlights();
+
+        wrongAttempts = 0;
+        hintBox.textContent = "";
+
+        var slots = answerArea.getElementsByClassName("answer-slot");
+        var activeSlot = slots[currentPosition];
+
+        activeSlot.textContent = number;
+        activeSlot.className = "answer-slot filled";
+
+        card.className += " used";
+        card.disabled = true;
+
+        currentPosition++;
+
+        if (currentPosition === correctOrder.length) {
+            completeRound();
+        }
+    }
+
+    function handleWrongChoice(card) {
+        wrongAttempts++;
+
+        card.className =
+            card.className.replace(" wrong", "");
+
+        /* Restart the jiggle animation */
+        void card.offsetWidth;
+
+        card.className += " wrong";
+
+        showFeedback(false);
+        safelyPlay(wrongAudio);
+
+        if (wrongAttempts >= 2) {
+            showHint();
+        }
+    }
+
+    function showHint() {
+        var expectedNumber = correctOrder[currentPosition];
+        var cards = numberOptions.getElementsByClassName("number-card");
+
+        clearHintHighlights();
+
+        hintBox.textContent =
+            "Hint: Tap the biggest number left.";
+
+        for (var i = 0; i < cards.length; i++) {
+            var cardNumber = parseInt(cards[i].textContent, 10);
+
+            if (
+                cardNumber === expectedNumber &&
+                cards[i].className.indexOf("used") === -1
+            ) {
+                cards[i].className += " hint";
+                break;
+            }
+        }
+    }
+
+    function clearHintHighlights() {
+        var cards = numberOptions.getElementsByClassName("number-card");
+
+        for (var i = 0; i < cards.length; i++) {
+            cards[i].className =
+                cards[i].className.replace(" hint", "");
+        }
+    }
+
+    function completeRound() {
+        inputLocked = true;
+        hintBox.textContent = "Great! You arranged the numbers correctly.";
+
+        showFeedback(true);
+        safelyPlay(clapAudio);
+
+        nextRoundTimer = setTimeout(function () {
+            currentRound++;
+
+            if (currentRound < questions.length) {
+                loadRound();
+            } else {
+                showFinalSlide();
+            }
+        }, 1900);
+    }
+
+    function showFeedback(isCorrect) {
+        clearTimeout(feedbackTimer);
+
+        feedback.className = "";
+        feedback.innerHTML = "";
+
+        if (isCorrect) {
+            feedback.innerHTML = "✓";
+            feedback.className = "correct show";
+        } else {
+            feedback.innerHTML = "×";
+            feedback.className = "incorrect show";
+        }
+
+        feedbackTimer = setTimeout(function () {
+            hideFeedback();
+        }, isCorrect ? 1200 : 750);
+    }
+
+    function hideFeedback() {
+        feedback.className = "";
+        feedback.innerHTML = "";
+    }
+
+    function showFinalSlide() {
+        hideFeedback();
+
+        activitySlide.className = "";
+        finalSlide.className = "visible";
+
+        createNumberRain();
+    }
+
+    function createNumberRain() {
+        numberRain.innerHTML = "";
+
+        var colours = [
+            "#f24b82",
+            "#ff9f1c",
+            "#2ec4b6",
+            "#6c63ff",
+            "#00a8e8",
+            "#76c442",
+            "#e65cff",
+            "#ff595e"
+        ];
+
+        for (var i = 0; i < 36; i++) {
+            var number = document.createElement("span");
+            var randomDigit = Math.floor(Math.random() * 10) + 1;
+            var randomLeft = Math.random() * 96;
+            var randomDelay = Math.random() * -8;
+            var randomDuration = 4.5 + Math.random() * 4;
+            var randomSize = 24 + Math.random() * 35;
+            var randomColour =
+                colours[Math.floor(Math.random() * colours.length)];
+
+            number.className = "rain-number";
+            number.textContent = randomDigit;
+
+            number.style.left = randomLeft + "%";
+            number.style.animationDelay = randomDelay + "s";
+            number.style.animationDuration = randomDuration + "s";
+            number.style.fontSize = randomSize + "px";
+            number.style.color = randomColour;
+
+            numberRain.appendChild(number);
+        }
+    }
+
+    function restartGame() {
+        finalSlide.className = "";
+        numberRain.innerHTML = "";
+        startGame();
+    }
+
+    playAgainButton.onclick = restartGame;
+
+    /*
+       Display only the Innovine logo on Slide 1.
+       The activity begins automatically after 5 seconds.
+    */
+    window.setTimeout(function () {
+        splashSlide.className = "hide";
+
+        window.setTimeout(function () {
+            startGame();
+        }, 450);
+    }, 5000);
+
+})();
+</script>
+
+</body>
+</html>
