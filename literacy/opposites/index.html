@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Opposite Pair Hunt</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:"Trebuchet MS",Arial,sans-serif;background:#fff}
+button{font:inherit}
+.screen{position:fixed;inset:0;display:none}
+.screen.active{display:flex}
+#splash{align-items:center;justify-content:center;background:#fff}
+#splash img{width:min(52vw,260px);max-height:42vh;object-fit:contain}
+#game{align-items:center;justify-content:center;padding:12px;background:
+radial-gradient(circle at 10% 15%,rgba(255,255,255,.8) 0 55px,transparent 56px),
+radial-gradient(circle at 92% 18%,rgba(255,255,255,.7) 0 70px,transparent 71px),
+linear-gradient(135deg,#fff4cf,#dff7ff 45%,#f7e5ff)}
+.shell{position:relative;width:min(960px,100%);height:min(720px,100%);border-radius:30px;background:rgba(255,255,255,.94);box-shadow:0 18px 55px rgba(86,55,126,.18);border:4px solid #fff;overflow:hidden;padding:18px;display:flex;flex-direction:column}
+.blob{position:absolute;border-radius:50%;opacity:.18;pointer-events:none}
+.b1{width:170px;height:170px;background:#ff5fa2;left:-75px;top:-70px}
+.b2{width:210px;height:210px;background:#58c7ff;right:-95px;bottom:-100px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:1}
+.title{font-size:clamp(22px,4vw,38px);font-weight:900;color:#8c3ea8;letter-spacing:.4px}
+.counter{background:#fff0f7;color:#d94084;border:2px solid #ffc2dc;border-radius:999px;padding:8px 14px;font-weight:800;white-space:nowrap}
+.progress{height:12px;background:#eee8f5;border-radius:999px;margin:12px 0;overflow:hidden;z-index:1}
+.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff73ad,#8b65dc,#48cbd5);border-radius:999px;transition:width .35s}
+.instruction{text-align:center;color:#5b5570;font-size:clamp(16px,2.5vw,23px);font-weight:700;margin:1px 0 8px;z-index:1}
+.prompt{z-index:1;margin:auto auto 12px;width:min(560px,96%);min-height:145px;border-radius:26px;background:linear-gradient(145deg,#fff,#fff8fd);border:3px solid #ffd5e7;box-shadow:0 10px 24px rgba(226,96,157,.12);display:flex;align-items:center;justify-content:center;gap:18px;padding:15px;text-align:center}
+.promptIcon{font-size:clamp(56px,10vw,96px);filter:drop-shadow(0 6px 5px rgba(0,0,0,.12))}
+.promptText{font-size:clamp(22px,4vw,34px);line-height:1.15;color:#423d55;font-weight:900}
+.options{z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;margin:auto 0}
+.option{min-height:130px;border:0;border-radius:24px;background:#fff;box-shadow:0 8px 0 #d8cde7,0 13px 24px rgba(78,54,105,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:10px;cursor:pointer;transition:transform .14s,box-shadow .14s}
+.option:active{transform:translateY(5px);box-shadow:0 3px 0 #d8cde7}
+.optionIcon{font-size:clamp(42px,8vw,78px);line-height:1}
+.optionLabel{font-size:clamp(18px,3vw,27px);font-weight:900;color:#4d4561}
+.option.giggle{animation:giggle .38s}
+.option.glow{animation:glow .8s infinite alternate;border:4px solid #50d890}
+.option.correct{background:#eafff2;box-shadow:0 8px 0 #78dba2}
+@keyframes giggle{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px) rotate(-2deg)}40%{transform:translateX(8px) rotate(2deg)}60%{transform:translateX(-6px)}80%{transform:translateX(5px)}}
+@keyframes glow{from{box-shadow:0 0 8px #48d88c,0 8px 0 #83dbaa}to{box-shadow:0 0 28px #48d88c,0 8px 0 #83dbaa;transform:scale(1.035)}}
+.feedback{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(255,255,255,.5);z-index:5;pointer-events:none}
+.feedback.show{display:flex}
+.feedbackCard{background:#fff;border-radius:30px;padding:20px 34px;text-align:center;box-shadow:0 18px 48px rgba(55,45,75,.25);animation:pop .35s}
+.tick{width:92px;height:92px;border-radius:50%;background:#45cf83;color:#fff;font-size:66px;line-height:92px;margin:auto;font-weight:900}
+.feedbackText{font-size:clamp(26px,5vw,44px);font-weight:900;color:#3eaa6b;margin-top:8px}
+@keyframes pop{0%{transform:scale(.5);opacity:0}80%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+#end{align-items:center;justify-content:center;background:linear-gradient(145deg,#fff0c8,#dbf7ff,#f4ddff);padding:16px;text-align:center}
+.endCard{position:relative;z-index:2;width:min(650px,96%);padding:35px 24px;border-radius:34px;background:rgba(255,255,255,.95);box-shadow:0 20px 55px rgba(75,46,112,.2);border:4px solid #fff}
+.trophy{font-size:clamp(78px,18vw,130px)}
+.endTitle{font-size:clamp(42px,9vw,72px);font-weight:900;color:#8a3ca5;margin:0}
+.endText{font-size:clamp(20px,4vw,30px);color:#57506a;font-weight:700;margin:10px 0 24px}
+.playAgain{border:0;border-radius:999px;background:linear-gradient(90deg,#ff5f9f,#8e61dd);color:#fff;padding:15px 34px;font-size:clamp(20px,4vw,28px);font-weight:900;box-shadow:0 8px 0 #6d42b0;cursor:pointer}
+.playAgain:active{transform:translateY(5px);box-shadow:0 3px 0 #6d42b0}
+.confetti{position:fixed;top:-20px;width:12px;height:18px;z-index:1;animation:fall linear forwards}
+@keyframes fall{to{transform:translate3d(var(--drift),110vh,0) rotate(720deg)}}
+@media(max-width:650px){
+#game{padding:7px}.shell{border-radius:22px;padding:11px}.topbar{align-items:flex-start}.counter{padding:6px 10px}.prompt{min-height:120px;margin-bottom:8px}.options{gap:8px}.option{min-height:112px;border-radius:18px;padding:7px}.progress{margin:8px 0}.instruction{margin-bottom:5px}
+}
+@media(max-height:620px){
+.shell{padding:9px}.title{font-size:24px}.counter{padding:5px 9px}.progress{height:8px;margin:6px 0}.instruction{font-size:16px;margin:0 0 4px}.prompt{min-height:90px;margin-bottom:6px;padding:7px}.promptIcon{font-size:48px}.promptText{font-size:21px}.options{gap:8px}.option{min-height:88px;padding:5px}.optionIcon{font-size:39px}.optionLabel{font-size:17px}
+}
+</style>
+</head>
+<body>
+<section id="splash" class="screen active"><img src="assets/innovine-logo.png" alt="Innovine logo"></section>
+ 
+<section id="game" class="screen">
+<div class="shell">
+<div class="blob b1"></div><div class="blob b2"></div>
+<div class="topbar">
+<div class="title">Opposite Pair Hunt</div>
+<div class="counter" id="counter">1 / 6</div>
+</div>
+<div class="progress"><span id="progressBar"></span></div>
+<div class="instruction">Tap the picture that shows the opposite.</div>
+<div class="prompt">
+<div class="promptIcon" id="promptIcon"></div>
+<div class="promptText">What is the opposite of<br><span id="promptWord"></span>?</div>
+</div>
+<div class="options" id="options"></div>
+<div class="feedback" id="feedback">
+<div class="feedbackCard"><div class="tick">✓</div><div class="feedbackText">Good job!</div></div>
+</div>
+</div>
+</section>
+ 
+<section id="end" class="screen">
+<div class="endCard">
+<div class="trophy">🏆</div>
+<h1 class="endTitle">Good job!</h1>
+<div class="endText">You found all the opposite pairs!</div>
+<button class="playAgain" id="playAgain">Play Again</button>
+</div>
+</section>
+ 
+<audio id="clapAudio" preload="auto" src="assets/claps.mp3"></audio>
+<audio id="wrongAudio" preload="auto" src="assets/wrong.mp3"></audio>
+ 
+<script>
+(function(){
+var questions=[
+{word:"fast",icon:"🐇",answer:"slow",choices:[["slow","🐢"],["hot","☕"],["short","✏️"]]},
+{word:"long",icon:"✏️━━━━",answer:"short",choices:[["full","🥤"],["short","✏️━"],["night","🌙"]]},
+{word:"cold",icon:"🧊",answer:"hot",choices:[["hot","☕"],["empty","🥛"],["open","🔓"]]},
+{word:"full",icon:"🥤",answer:"empty",choices:[["slow","🐢"],["empty","🥛"],["close","🔒"]]},
+{word:"day",icon:"☀️",answer:"night",choices:[["night","🌙"],["long","✏️━━━━"],["cold","🧊"]]},
+{word:"open",icon:"🔓",answer:"close",choices:[["fast","🐇"],["close","🔒"],["day","☀️"]]}
+];
+var order=[],current=0,wrongAttempts=0,locked=false;
+var splash=document.getElementById("splash"),game=document.getElementById("game"),end=document.getElementById("end");
+var options=document.getElementById("options"),promptIcon=document.getElementById("promptIcon"),promptWord=document.getElementById("promptWord");
+var counter=document.getElementById("counter"),progressBar=document.getElementById("progressBar"),feedback=document.getElementById("feedback");
+var clap=document.getElementById("clapAudio"),wrong=document.getElementById("wrongAudio");
+ 
+function shuffle(a){
+for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}
+return a;
+}
+function showScreen(s){
+splash.className="screen";game.className="screen";end.className="screen";s.className="screen active";
+}
+function startGame(){
+removeConfetti();order=shuffle(questions.slice());current=0;wrongAttempts=0;locked=false;showScreen(game);renderQuestion();
+}
+function renderQuestion(){
+locked=false;wrongAttempts=0;feedback.className="feedback";
+var q=order[current],choices=shuffle(q.choices.slice());
+promptIcon.textContent=q.icon;promptWord.textContent=q.word;
+counter.textContent=(current+1)+" / "+order.length;
+progressBar.style.width=((current/order.length)*100)+"%";
+options.innerHTML="";
+for(var i=0;i<choices.length;i++){
+   var b=document.createElement("button");b.className="option";b.setAttribute("data-answer",choices[i][0]);
+   b.innerHTML='<span class="optionIcon">'+choices[i][1]+'</span><span class="optionLabel">'+choices[i][0]+'</span>';
+   b.onclick=choose;b.ontouchstart=function(){};options.appendChild(b);
+}
+}
+function playAudio(a){
+try{a.pause();a.currentTime=0;var p=a.play();if(p&&p.catch){p.catch(function(){})}}catch(e){}
+}
+function choose(){
+if(locked)return;
+var q=order[current],picked=this.getAttribute("data-answer");
+if(picked===q.answer){
+   locked=true;this.className+=" correct";feedback.className="feedback show";playAudio(clap);
+   progressBar.style.width=(((current+1)/order.length)*100)+"%";
+   setTimeout(function(){current++;if(current<order.length){renderQuestion()}else{finishGame()}},1200);
+}else{
+   wrongAttempts++;playAudio(wrong);this.className=this.className.replace(" giggle","")+" giggle";
+   var btn=this;setTimeout(function(){btn.className=btn.className.replace(" giggle","")},430);
+   if(wrongAttempts>=2){
+     var all=options.getElementsByClassName("option");
+     for(var i=0;i<all.length;i++){if(all[i].getAttribute("data-answer")===q.answer){all[i].className+=" glow"}}
+   }
+}
+}
+function finishGame(){showScreen(end);makeConfetti()}
+function makeConfetti(){
+var colors=["#ff5f9f","#6c63ff","#42cfd2","#ffd34e","#7bd96c","#ff8a4d"];
+for(var i=0;i<90;i++){
+   var c=document.createElement("i");c.className="confetti";
+   c.style.left=Math.random()*100+"vw";c.style.background=colors[i%colors.length];
+   c.style.animationDuration=(2.4+Math.random()*2.6)+"s";c.style.animationDelay=(Math.random()*.7)+"s";
+   c.style.setProperty("--drift",(Math.random()*180-90)+"px");
+   c.style.transform="rotate("+Math.random()*360+"deg)";
+   document.body.appendChild(c);
+}
+}
+function removeConfetti(){
+var cs=document.getElementsByClassName("confetti");
+while(cs.length){cs[0].parentNode.removeChild(cs[0])}
+}
+document.getElementById("playAgain").onclick=startGame;
+setTimeout(startGame,2000);
+})();
+</script>
+</body>
+</html>
